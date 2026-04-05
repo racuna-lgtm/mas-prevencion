@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Más prevención — Investigación</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#1B2E6E;--azul-claro:#e8ecf8;--naranja:#E87722;--naranja-claro:#fdf0e4;--blanco:#ffffff;--gris-bg:#f2f4f8;--gris-borde:#dde1ec;--gris-texto:#5a6480;--gris-muted:#98a0b8;--negro:#0d1526;--verde:#15803D;--verde-claro:#dcfce7;--rojo:#dc2626;--rojo-claro:#fee2e2;--amarillo:#854D0E;--amarillo-claro:#fef9c3;--morado:#5B21B6;--morado-claro:#ede9fe;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro);min-height:100vh;max-width:600px;margin:0 auto;padding-bottom:40px;}
+.header{background:var(--azul);padding:0 18px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.btn-back{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.header-info{flex:1;}
+.header-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#fff;}
+.header-sub{font-size:11px;color:rgba(255,255,255,0.7);}
+.progreso-wrap{background:var(--azul);padding:0 18px 14px;}
+.progreso-bar{height:4px;background:rgba(255,255,255,0.2);border-radius:10px;overflow:hidden;}
+.progreso-fill{height:100%;background:var(--naranja);border-radius:10px;transition:width 0.4s ease;}
+.body{padding:18px 16px;}
+.seccion{background:var(--blanco);border-radius:14px;border:1px solid var(--gris-borde);margin-bottom:14px;overflow:hidden;}
+.sec-header{padding:12px 16px;background:var(--azul-claro);border-bottom:1px solid var(--gris-borde);display:flex;align-items:center;gap:8px;}
+.sec-icon{font-size:18px;}
+.sec-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:var(--azul);}
+.sec-body{padding:14px 16px;}
+.fl{font-size:11px;font-weight:700;color:var(--gris-texto);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;display:block;}
+.fi,.fs,.ft{width:100%;padding:11px 13px;border:1.5px solid var(--gris-borde);border-radius:10px;font-size:14px;font-family:'Barlow',sans-serif;color:var(--negro);background:var(--blanco);transition:border 0.15s;}
+.fi:focus,.fs:focus,.ft:focus{outline:none;border-color:var(--naranja);}
+.ft{resize:none;}
+.fg{margin-bottom:14px;}
+.fg:last-child{margin-bottom:0;}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* 5 POR QUÉS */
+.porq-item{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start;}
+.porq-num{width:32px;height:32px;border-radius:50%;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.porq-input{flex:1;padding:11px 13px;border:1.5px solid var(--gris-borde);border-radius:10px;font-size:14px;font-family:'Barlow',sans-serif;color:var(--negro);background:var(--blanco);resize:none;min-height:60px;transition:border 0.15s;}
+.porq-input:focus{outline:none;border-color:var(--azul);}
+.porq-arrow{text-align:center;color:var(--gris-muted);font-size:18px;margin:0 0 10px 42px;}
+
+/* FACTORES */
+.factor-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.factor-opt{padding:10px 12px;border-radius:10px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:12px;font-weight:600;color:var(--gris-texto);text-align:center;min-height:48px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:1.3;}
+.factor-opt.sel{border-color:var(--azul);background:var(--azul-claro);color:var(--azul);}
+.factor-opt:active{transform:scale(0.97);}
+
+/* CORRECTIVAS */
+.correctiva-card{background:var(--gris-bg);border-radius:12px;padding:12px 14px;margin-bottom:10px;border:1px solid var(--gris-borde);position:relative;}
+.correctiva-num{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:var(--naranja);margin-bottom:8px;}
+.btn-eliminar{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:7px;border:1px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--rojo);}
+.btn-agregar{width:100%;padding:12px;border-radius:10px;border:2px dashed var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:13px;font-weight:600;color:var(--gris-texto);font-family:'Barlow',sans-serif;transition:all 0.15s;}
+.btn-agregar:hover{border-color:var(--naranja);color:var(--naranja);}
+
+/* TIPO CORRECTIVA */
+.tipo-corr{display:flex;gap:7px;margin-bottom:10px;}
+.tc-opt{flex:1;padding:7px 4px;border-radius:9px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:11px;font-weight:700;text-align:center;transition:all 0.15s;}
+.tc-opt.sel-inm{border-color:var(--rojo);background:var(--rojo-claro);color:var(--rojo);}
+.tc-opt.sel-cp{border-color:var(--naranja);background:var(--naranja-claro);color:#9A3412;}
+.tc-opt.sel-lp{border-color:var(--verde);background:var(--verde-claro);color:var(--verde);}
+
+/* MIC */
+.mic-btn{padding:10px 14px;border-radius:10px;border:2px dashed var(--gris-borde);background:var(--blanco);cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--gris-texto);font-family:'Barlow',sans-serif;transition:all 0.15s;margin-bottom:8px;}
+.mic-btn.grabando{border-color:var(--naranja);background:var(--naranja-claro);color:#9A3412;}
+
+.btn-guardar{width:100%;padding:17px;border-radius:14px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-guardar:hover{background:#243d8f;}
+.btn-guardar.naranja{background:var(--naranja);}
+
+.resumen-evento{background:var(--azul-claro);border-radius:12px;padding:12px 14px;margin-bottom:14px;}
+.resumen-id{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:var(--azul);margin-bottom:4px;}
+.resumen-desc{font-size:13px;color:var(--gris-texto);line-height:1.5;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--negro);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:200;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{background:var(--verde);}
+@media(min-width:600px){body{border-left:1px solid var(--gris-borde);border-right:1px solid var(--gris-borde);}}
+</style>
+</head>
+<body>
+<div class="header">
+  <button class="btn-back" onclick="window.location.href='dashboard-prev.html'">←</button>
+  <div class="header-info">
+    <div class="header-titulo">Completar investigación</div>
+    <div class="header-sub" id="header-sub">Cargando...</div>
+  </div>
+</div>
+<div class="progreso-wrap">
+  <div class="progreso-bar"><div class="progreso-fill" id="prog" style="width:0%"></div></div>
+</div>
+
+<div class="body">
+  <div id="resumen-evento" class="resumen-evento" style="display:none;">
+    <div class="resumen-id" id="res-id"></div>
+    <div class="resumen-desc" id="res-desc"></div>
+  </div>
+
+  <!-- 5 POR QUÉS -->
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">🔍</span><span class="sec-titulo">Árbol de causas — 5 por qués</span></div>
+    <div class="sec-body">
+      <p style="font-size:13px;color:var(--gris-texto);margin-bottom:14px;line-height:1.6;">Pregunta "¿por qué?" hasta llegar a la causa raíz. Completa los que correspondan.</p>
+      <div id="porques-wrap"></div>
+      <div style="margin-top:8px;">
+        <div onclick="toggleMicPorque()" id="mic-porq-btn" class="mic-btn">
+          <span id="mic-porq-icon">🎙️</span><span id="mic-porq-txt">Dictar respuesta por voz</span>
+        </div>
+        <div id="trans-porq" style="display:none;background:var(--verde-claro);border:1.5px solid var(--verde);border-radius:10px;padding:10px 12px;margin-top:6px;">
+          <div style="font-size:11px;font-weight:700;color:var(--verde);margin-bottom:4px;">ESTO ESCUCHÉ</div>
+          <div id="trans-porq-txt" style="font-size:14px;color:var(--negro);margin-bottom:8px;"></div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="usarTransPorq()" style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--verde);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;cursor:pointer;">✓ Agregar al campo activo</button>
+            <button onclick="document.getElementById('trans-porq').style.display='none'" style="padding:8px 12px;border-radius:8px;border:1.5px solid var(--gris-borde);background:var(--blanco);color:var(--gris-texto);font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;cursor:pointer;">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAUSA RAÍZ -->
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">🎯</span><span class="sec-titulo">Causa raíz identificada</span></div>
+    <div class="sec-body">
+      <div class="fg">
+        <textarea class="ft" id="causa-raiz" rows="3" placeholder="Describe la causa raíz del evento basándote en el análisis de los 5 por qués..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- FACTORES CONTRIBUTIVOS -->
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">⚙️</span><span class="sec-titulo">Factores contributivos</span></div>
+    <div class="sec-body">
+      <p style="font-size:12px;color:var(--gris-texto);margin-bottom:12px;">Selecciona todos los factores que contribuyeron al evento</p>
+      <div class="factor-grid" id="factores-grid">
+        <div class="factor-opt" onclick="toggleFactor(this,'Falta de capacitación')">📚 Falta de capacitación</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Procedimiento no seguido')">📋 Procedimiento no seguido</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'EPP inadecuado o ausente')">⛑️ EPP inadecuado</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Diseño deficiente del área')">🏗️ Diseño del área</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Falta de supervisión')">👁️ Falta de supervisión</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Fatiga o sobrecarga')">😓 Fatiga o sobrecarga</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Herramienta o equipo defectuoso')">🔧 Equipo defectuoso</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Condición ambiental adversa')">🌡️ Condición ambiental</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Presión de tiempo o producción')">⏱️ Presión de tiempo</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Señalización deficiente')">🚧 Señalización</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Error humano involuntario')">🧠 Error involuntario</div>
+        <div class="factor-opt" onclick="toggleFactor(this,'Acto inseguro consciente')">⚠️ Acto inseguro</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEDIDAS CORRECTIVAS -->
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">✅</span><span class="sec-titulo">Medidas correctivas propuestas</span></div>
+    <div class="sec-body">
+      <p style="font-size:13px;color:var(--gris-texto);margin-bottom:14px;line-height:1.6;">Propón al menos una medida para prevenir que el evento se repita. Rafael revisará y aprobará.</p>
+      <div id="correctivas-wrap"></div>
+      <button class="btn-agregar" onclick="agregarCorrectiva()">+ Agregar medida correctiva</button>
+    </div>
+  </div>
+
+  <!-- OBSERVACIONES -->
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">📝</span><span class="sec-titulo">Observaciones adicionales</span></div>
+    <div class="sec-body">
+      <textarea class="ft" id="observaciones" rows="3" placeholder="Cualquier información adicional relevante para la investigación..."></textarea>
+    </div>
+  </div>
+
+  <button class="btn-guardar" onclick="guardarInvestigacion()">
+    Enviar investigación a Rafael →
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const usuario = JSON.parse(localStorage.getItem('mp_usuario')||'null');
+if(!usuario) window.location.href='index.html';
+
+const params = new URLSearchParams(window.location.search);
+const eventoId = params.get('id');
+let evento = null;
+
+function getEventos(){return JSON.parse(localStorage.getItem('mp_eventos')||'[]');}
+function saveEventos(ev){localStorage.setItem('mp_eventos',JSON.stringify(ev));}
+
+// Cargar evento
+if(eventoId){
+  const todos=getEventos();
+  evento=todos.find(e=>e.id===eventoId);
+}
+
+if(!evento){
+  document.body.innerHTML='<div style="padding:40px;text-align:center;color:#5a6480;font-family:Barlow,sans-serif;"><div style="font-size:40px;margin-bottom:12px;">⚠️</div><div style="font-size:16px;font-weight:600;">Evento no encontrado</div><br><a href="dashboard-prev.html" style="color:#1B2E6E;font-weight:700;">Volver al inicio</a></div>';
+} else {
+  document.getElementById('header-sub').textContent = evento.id + ' · ' + evento.subtipo + ' · ' + evento.lugar;
+  document.getElementById('res-id').textContent = evento.id + ' — ' + evento.subtipo;
+  document.getElementById('res-desc').textContent = evento.descripcion;
+  document.getElementById('resumen-evento').style.display = 'block';
+}
+
+// ── 5 POR QUÉS ────────────────────────────────────────────────
+const PREGUNTAS_PORQ = [
+  '¿Por qué ocurrió el evento?',
+  '¿Por qué ocurrió eso? (causa de la causa anterior)',
+  '¿Por qué ocurrió eso? (profundizar más)',
+  '¿Por qué ocurrió eso? (seguir profundizando)',
+  '¿Por qué ocurrió eso? (causa raíz probable)'
+];
+
+function renderPorques(){
+  document.getElementById('porques-wrap').innerHTML = PREGUNTAS_PORQ.map((p,i)=>`
+    <div class="porq-item">
+      <div class="porq-num">${i+1}</div>
+      <textarea class="porq-input" id="porq-${i}" placeholder="${p}" rows="2" oninput="actualizarProgreso()"></textarea>
+    </div>
+    ${i<4?'<div class="porq-arrow">↓</div>':''}
+  `).join('');
+}
+
+let factoresSeleccionados=[];
+function toggleFactor(el,valor){
+  el.classList.toggle('sel');
+  if(el.classList.contains('sel')) factoresSeleccionados.push(valor);
+  else factoresSeleccionados=factoresSeleccionados.filter(f=>f!==valor);
+  actualizarProgreso();
+  if(navigator.vibrate)navigator.vibrate(30);
+}
+
+// ── CORRECTIVAS ───────────────────────────────────────────────
+let correctivas=[];
+let numCorrectiva=0;
+
+function agregarCorrectiva(){
+  numCorrectiva++;
+  const id='corr-'+numCorrectiva;
+  correctivas.push({id,desc:'',tipo:'',responsable:'',plazo:''});
+  renderCorrectivas();
+  setTimeout(()=>document.getElementById('desc-'+id)?.focus(),100);
+}
+
+function renderCorrectivas(){
+  document.getElementById('correctivas-wrap').innerHTML=correctivas.map((c,i)=>`
+    <div class="correctiva-card" id="card-${c.id}">
+      <div class="correctiva-num">Medida ${i+1}</div>
+      <button class="btn-eliminar" onclick="eliminarCorrectiva('${c.id}')">✕</button>
+      <div class="fg">
+        <label class="fl">Descripción de la medida</label>
+        <textarea class="ft" id="desc-${c.id}" rows="2" placeholder="¿Qué se debe hacer para prevenir que se repita?" oninput="updateCorr('${c.id}','desc',this.value);actualizarProgreso();">${c.desc}</textarea>
+      </div>
+      <div class="fg">
+        <label class="fl">Tipo de corrección</label>
+        <div class="tipo-corr">
+          <div class="tc-opt ${c.tipo==='inmediata'?'sel-inm':''}" onclick="selTipoCorr('${c.id}','inmediata',this)">🚨 Inmediata</div>
+          <div class="tc-opt ${c.tipo==='corto_plazo'?'sel-cp':''}" onclick="selTipoCorr('${c.id}','corto_plazo',this)">⏱ Corto plazo</div>
+          <div class="tc-opt ${c.tipo==='largo_plazo'?'sel-lp':''}" onclick="selTipoCorr('${c.id}','largo_plazo',this)">📅 Largo plazo</div>
+        </div>
+      </div>
+      <div class="fg-row">
+        <div class="fg">
+          <label class="fl">Responsable</label>
+          <input class="fi" id="resp-${c.id}" placeholder="Nombre o cargo" value="${c.responsable}" oninput="updateCorr('${c.id}','responsable',this.value)">
+        </div>
+        <div class="fg">
+          <label class="fl">Plazo límite</label>
+          <input type="date" class="fi" id="plazo-${c.id}" value="${c.plazo}" oninput="updateCorr('${c.id}','plazo',this.value);actualizarProgreso()">
+        </div>
+      </div>
+    </div>
+  `).join('');
+  if(correctivas.length===0){
+    document.getElementById('correctivas-wrap').innerHTML='<div style="text-align:center;padding:16px;color:var(--gris-muted);font-size:13px;">Agrega al menos una medida correctiva</div>';
+  }
+}
+
+function updateCorr(id,campo,val){
+  const idx=correctivas.findIndex(c=>c.id===id);
+  if(idx>=0) correctivas[idx][campo]=val;
+}
+
+function selTipoCorr(id,tipo,el){
+  updateCorr(id,'tipo',tipo);
+  const card=document.getElementById('card-'+id);
+  card.querySelectorAll('.tc-opt').forEach(o=>o.className='tc-opt');
+  const cls=tipo==='inmediata'?'sel-inm':tipo==='corto_plazo'?'sel-cp':'sel-lp';
+  el.classList.add(cls);
+  if(navigator.vibrate)navigator.vibrate(30);
+}
+
+function eliminarCorrectiva(id){
+  correctivas=correctivas.filter(c=>c.id!==id);
+  renderCorrectivas();
+  actualizarProgreso();
+}
+
+// ── PROGRESO ──────────────────────────────────────────────────
+function actualizarProgreso(){
+  let pts=0;
+  const porq=[...Array(5)].map((_,i)=>document.getElementById('porq-'+i)?.value.trim()||'');
+  const llenos=porq.filter(p=>p).length;
+  pts+=Math.min(llenos,3)*15; // hasta 45 pts por 3+ por qués
+  if(document.getElementById('causa-raiz')?.value.trim()) pts+=20;
+  if(factoresSeleccionados.length>0) pts+=15;
+  if(correctivas.length>0&&correctivas[0].desc) pts+=20;
+  document.getElementById('prog').style.width=Math.min(pts,100)+'%';
+}
+
+// ── VOZ ───────────────────────────────────────────────────────
+let recPorq=null, grabandoPorq=false, txtVozPorq='';
+
+function toggleMicPorque(){if(grabandoPorq)detenerMicPorq();else iniciarMicPorq();}
+function iniciarMicPorq(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){mostrarToast('Usa Chrome para el micrófono',false);return;}
+  grabandoPorq=true;txtVozPorq='';
+  const btn=document.getElementById('mic-porq-btn');
+  btn.classList.add('grabando');
+  document.getElementById('mic-porq-icon').textContent='⏹️';
+  document.getElementById('mic-porq-txt').textContent='Escuchando... toca para detener';
+  recPorq=new SR();recPorq.lang='es-CL';recPorq.continuous=false;recPorq.interimResults=false;
+  recPorq.onresult=e=>{txtVozPorq=e.results[0][0].transcript;};
+  recPorq.onend=()=>{
+    grabandoPorq=false;btn.classList.remove('grabando');
+    document.getElementById('mic-porq-icon').textContent='🎙️';
+    document.getElementById('mic-porq-txt').textContent='Dictar respuesta por voz';
+    if(txtVozPorq){
+      document.getElementById('trans-porq-txt').textContent=txtVozPorq;
+      document.getElementById('trans-porq').style.display='block';
+    }
+  };
+  recPorq.onerror=()=>{grabandoPorq=false;btn.classList.remove('grabando');document.getElementById('mic-porq-icon').textContent='🎙️';document.getElementById('mic-porq-txt').textContent='Dictar respuesta por voz';};
+  recPorq.start();
+}
+function detenerMicPorq(){grabandoPorq=false;if(recPorq){try{recPorq.stop();}catch(e){}}}
+function usarTransPorq(){
+  // Poner en el primer campo vacío de los 5 por qués
+  for(let i=0;i<5;i++){
+    const el=document.getElementById('porq-'+i);
+    if(el&&!el.value.trim()){el.value=txtVozPorq;actualizarProgreso();break;}
+  }
+  document.getElementById('trans-porq').style.display='none';
+  mostrarToast('✓ Agregado al campo vacío',true);
+}
+
+// ── GUARDAR ───────────────────────────────────────────────────
+function guardarInvestigacion(){
+  const porqs=[...Array(5)].map((_,i)=>document.getElementById('porq-'+i)?.value.trim()||'').filter(p=>p);
+  if(porqs.length<1){mostrarToast('Completa al menos el primer "¿Por qué?"',false);return;}
+  if(!document.getElementById('causa-raiz').value.trim()){mostrarToast('Describe la causa raíz identificada',false);return;}
+  if(correctivas.length===0){mostrarToast('Agrega al menos una medida correctiva',false);return;}
+  if(correctivas.some(c=>!c.desc.trim())){mostrarToast('Completa la descripción de todas las medidas',false);return;}
+  if(correctivas.some(c=>!c.plazo)){mostrarToast('Define el plazo de todas las medidas correctivas',false);return;}
+
+  const todos=getEventos();
+  const idx=todos.findIndex(e=>e.id===eventoId);
+  if(idx<0){mostrarToast('Error: evento no encontrado',false);return;}
+
+  todos[idx].estado='correctivas';
+  todos[idx].investigacion={
+    porques: porqs,
+    causa_raiz: document.getElementById('causa-raiz').value.trim(),
+    factores: factoresSeleccionados,
+    observaciones: document.getElementById('observaciones').value.trim(),
+    fecha_completada: new Date().toISOString(),
+    completada_por: usuario.nombre
+  };
+  todos[idx].correctivas=correctivas.map(c=>({
+    descripcion:c.desc,
+    tipo:c.tipo||'pendiente_tipo',
+    responsable:c.responsable||usuario.nombre,
+    plazo:c.plazo,
+    estado:'pendiente'
+  }));
+  if(!todos[idx].historial) todos[idx].historial=[];
+  todos[idx].historial.push({
+    fecha:new Date().toISOString(),
+    usuario:usuario.nombre.split(' ').slice(0,2).join(' '),
+    accion:`Investigación completada. ${porqs.length} por qués. ${correctivas.length} medida(s) correctiva(s) propuesta(s). En espera de aprobación de Rafael.`
+  });
+  saveEventos(todos);
+
+  document.querySelector('.body').innerHTML=`
+    <div style="text-align:center;padding:48px 20px;">
+      <div style="font-size:64px;margin-bottom:16px;">📋</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--negro);margin-bottom:8px;">Investigación enviada</div>
+      <div style="font-size:14px;color:var(--gris-texto);line-height:1.7;margin-bottom:24px;">
+        La investigación del evento <strong>${eventoId}</strong> fue enviada a Rafael.<br>
+        Él la revisará y aprobará el cierre cuando todo esté en orden.
+      </div>
+      <button onclick="window.location.href='dashboard-prev.html'" style="width:100%;padding:16px;border-radius:14px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;cursor:pointer;margin-bottom:10px;">Volver al inicio</button>
+      <button onclick="window.location.href='mp-mis-registros.html'" style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--gris-borde);background:var(--blanco);color:var(--gris-texto);font-family:'Barlow',sans-serif;font-weight:600;font-size:15px;cursor:pointer;">Ver mis registros</button>
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+function mostrarToast(msg,ok){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(ok?' ok':'')+' show';
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// Init
+renderPorques();
+renderCorrectivas();
+actualizarProgreso();
+// Agregar primera correctiva automáticamente
+agregarCorrectiva();
+</script>
+</body>
+</html>
