@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Más prevención — Mis registros</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#1B2E6E;--naranja:#E87722;--naranja-claro:#fdf0e4;--blanco:#ffffff;--gris-bg:#f2f4f8;--gris-borde:#dde1ec;--gris-texto:#5a6480;--gris-muted:#98a0b8;--negro:#0d1526;--verde:#15803D;--verde-claro:#dcfce7;--rojo:#dc2626;--rojo-claro:#fee2e2;--amarillo:#854D0E;--amarillo-claro:#fef9c3;--morado:#5B21B6;--morado-claro:#ede9fe;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro);min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:90px;}
+.header{background:var(--azul);padding:0 18px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.btn-back{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.header-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#fff;flex:1;}
+.body{padding:16px;}
+.filtros{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;}
+.filtro{padding:7px 14px;border-radius:20px;border:1.5px solid var(--gris-borde);background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;color:var(--gris-texto);white-space:nowrap;transition:all 0.15s;font-family:'Barlow',sans-serif;}
+.filtro.activo{background:var(--azul);border-color:var(--azul);color:#fff;}
+.reg-card{background:var(--blanco);border-radius:14px;border:1px solid var(--gris-borde);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;}
+.reg-card:active{transform:scale(0.98);}
+.reg-card.grave{border-color:#fecaca;border-left:3px solid var(--rojo);}
+.reg-header{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.reg-id{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--azul);}
+.reg-tipo{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;}
+.t-accidente{background:var(--rojo-claro);color:var(--rojo);}
+.t-incidente{background:var(--amarillo-claro);color:var(--amarillo);}
+.t-observacion{background:var(--verde-claro);color:var(--verde);}
+.t-ambiental{background:#E0F2FE;color:#075985;}
+.reg-estado{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:auto;}
+.e-registrado{background:var(--azul-claro,#e8ecf8);color:var(--azul);}
+.e-investigando{background:var(--amarillo-claro);color:var(--amarillo);}
+.e-correctivas{background:var(--morado-claro);color:var(--morado);}
+.e-cerrado{background:var(--verde-claro);color:var(--verde);}
+.reg-desc{font-size:13px;color:var(--negro);line-height:1.4;margin-bottom:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.reg-meta{display:flex;gap:10px;font-size:11px;color:var(--gris-muted);flex-wrap:wrap;}
+.empty{text-align:center;padding:40px 20px;color:var(--gris-muted);}
+.empty-icon{font-size:40px;margin-bottom:10px;}
+
+/* MODAL DETALLE */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,21,38,0.6);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--blanco);border-radius:22px 22px 0 0;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;}
+.modal-handle{width:40px;height:4px;background:var(--gris-borde);border-radius:10px;margin:12px auto 0;}
+.modal-header{padding:16px 20px 12px;border-bottom:1px solid var(--gris-borde);display:flex;align-items:center;justify-content:space-between;}
+.modal-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;}
+.modal-close{width:30px;height:30px;border-radius:8px;border:1px solid var(--gris-borde);background:var(--gris-bg);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:16px 20px 32px;}
+.df{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f6fa;font-size:13px;}
+.df:last-child{border-bottom:none;}
+.dk{color:var(--gris-texto);font-weight:500;}
+.dv{color:var(--negro);font-weight:600;text-align:right;max-width:55%;}
+.hist-item{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid #f5f6fa;font-size:12px;}
+.hist-fecha{color:var(--gris-muted);white-space:nowrap;min-width:110px;}
+
+.nav-bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--blanco);border-top:1px solid var(--gris-borde);display:flex;padding:10px 0 18px;z-index:50;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0;font-size:11px;color:var(--gris-muted);font-weight:600;}
+.nav-item.activo{color:var(--naranja);}
+.nav-icono{font-size:22px;}
+@media(min-width:480px){body{border-left:1px solid var(--gris-borde);border-right:1px solid var(--gris-borde);}}
+</style>
+</head>
+<body>
+<div class="header">
+  <button class="btn-back" onclick="window.location.href='dashboard-prev.html'">←</button>
+  <div class="header-titulo">Mis registros</div>
+  <div id="conteo" style="font-size:12px;color:rgba(255,255,255,0.7);"></div>
+</div>
+<div class="body">
+  <div class="filtros">
+    <div class="filtro activo" onclick="filtrar('todos',this)">Todos</div>
+    <div class="filtro" onclick="filtrar('registrado',this)">Sin asignar</div>
+    <div class="filtro" onclick="filtrar('investigando',this)">Investigando</div>
+    <div class="filtro" onclick="filtrar('correctivas',this)">Con correctivas</div>
+    <div class="filtro" onclick="filtrar('cerrado',this)">Cerrados</div>
+  </div>
+  <div id="lista"></div>
+</div>
+
+<div class="modal-overlay" id="modal-det" onclick="cerrarOverlay(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span class="modal-titulo" id="det-titulo">Detalle</span>
+      <button class="modal-close" onclick="cerrarDet()">✕</button>
+    </div>
+    <div class="modal-body" id="det-body"></div>
+  </div>
+</div>
+
+<div class="nav-bottom">
+  <div class="nav-item" onclick="window.location.href='dashboard-prev.html'"><div class="nav-icono">🏠</div><span>Inicio</span></div>
+  <div class="nav-item" onclick="window.location.href='mp-nuevo-evento.html'"><div class="nav-icono">➕</div><span>Registrar</span></div>
+  <div class="nav-item activo"><div class="nav-icono">📋</div><span>Mis registros</span></div>
+</div>
+
+<script>
+const usuario = JSON.parse(localStorage.getItem('mp_usuario')||'null');
+if(!usuario||usuario.rol!=='prevencionista') window.location.href='index.html';
+let filtroActual='todos';
+
+function getEventos(){return JSON.parse(localStorage.getItem('mp_eventos')||'[]');}
+function estadoLabel(e){return{registrado:'Sin asignar',investigando:'Investigando',correctivas:'Con correctivas',cerrado:'Cerrado'}[e]||e;}
+
+function filtrar(f,el){
+  filtroActual=f;
+  document.querySelectorAll('.filtro').forEach(b=>b.classList.remove('activo'));
+  el.classList.add('activo');
+  render();
+}
+
+function render(){
+  const todos=getEventos().filter(e=>e.prevencionista_codigo===usuario.codigo);
+  const lista=filtroActual==='todos'?todos:todos.filter(e=>e.estado===filtroActual);
+  const sorted=[...lista].sort((a,b)=>new Date(b.fecha_registro)-new Date(a.fecha_registro));
+  document.getElementById('conteo').textContent=sorted.length+' evento'+(sorted.length!==1?'s':'');
+  const cont=document.getElementById('lista');
+  if(sorted.length===0){
+    cont.innerHTML=`<div class="empty"><div class="empty-icon">📋</div>${filtroActual==='todos'?'Aún no has registrado eventos.':'No hay eventos en este estado.'}</div>`;
+    return;
+  }
+  cont.innerHTML=sorted.map(e=>`
+    <div class="reg-card ${e.gravedad==='grave'||e.gravedad==='fatal'?'grave':''}" onclick="abrirDet('${e.id}')">
+      <div class="reg-header">
+        <span class="reg-id">${e.id}</span>
+        <span class="reg-tipo t-${e.tipo}">${e.subtipo}</span>
+        <span class="reg-estado e-${e.estado}">${estadoLabel(e.estado)}</span>
+      </div>
+      <div class="reg-desc">${e.descripcion}</div>
+      <div class="reg-meta">
+        <span>📅 ${e.fecha} ${e.hora}</span>
+        <span>📍 ${e.lugar} · ${e.area}</span>
+        ${e.gravedad==='grave'||e.gravedad==='fatal'?'<span style="color:var(--rojo);font-weight:700;">🚨 '+e.gravedad.toUpperCase()+'</span>':''}
+      </div>
+      ${e.estado==='investigando'?`<div style="margin-top:10px;"><a href="mp-investigacion.html?id=${e.id}" style="display:inline-block;padding:7px 14px;background:var(--azul);color:#fff;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;">Completar investigación →</a></div>`:''}
+      ${e.estado==='correctivas'?`<div style="margin-top:10px;"><a href="mp-correctivas.html?id=${e.id}" style="display:inline-block;padding:7px 14px;background:var(--morado);color:#fff;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;">Registrar correctivas →</a></div>`:''}
+    </div>`).join('');
+}
+
+function abrirDet(id){
+  const e=getEventos().find(ev=>ev.id===id);
+  document.getElementById('det-titulo').textContent=e.id+' — '+e.subtipo;
+  document.getElementById('det-body').innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <span class="reg-tipo t-${e.tipo}">${e.subtipo}</span>
+      <span class="reg-estado e-${e.estado}">${estadoLabel(e.estado)}</span>
+      ${e.gravedad==='grave'||e.gravedad==='fatal'?'<span style="font-size:11px;font-weight:700;color:var(--rojo);">🚨 GRAVE</span>':''}
+    </div>
+    <div class="df"><span class="dk">Fecha y hora</span><span class="dv">${e.fecha} ${e.hora}</span></div>
+    <div class="df"><span class="dk">Lugar</span><span class="dv">${e.lugar} · ${e.area}</span></div>
+    <div class="df"><span class="dk">Descripción</span><span class="dv" style="text-align:left;max-width:100%;margin-top:4px;">${e.descripcion}</span></div>
+    <div class="df"><span class="dk">Afectado</span><span class="dv">${e.afectado_nombre}</span></div>
+    <div class="df"><span class="dk">Acción inmediata</span><span class="dv" style="text-align:left;">${e.accion_inmediata}</span></div>
+    ${e.asignado_a?`<div class="df"><span class="dk">Investigación asignada</span><span class="dv">Plazo: ${e.plazo_investigacion||'Sin plazo'}</span></div>`:''}
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--gris-borde);">
+      <div style="font-size:11px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Historial</div>
+      ${(e.historial||[]).map(h=>`<div class="hist-item"><div class="hist-fecha">${new Date(h.fecha).toLocaleString('es-CL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div><div><strong style="color:var(--azul);">${h.usuario}</strong> · ${h.accion}</div></div>`).join('')}
+    </div>`;
+  document.getElementById('modal-det').classList.add('open');
+}
+
+function cerrarDet(){document.getElementById('modal-det').classList.remove('open');}
+function cerrarOverlay(e){if(e.target.classList.contains('modal-overlay'))cerrarDet();}
+render();
+</script>
+</body>
+</html>
