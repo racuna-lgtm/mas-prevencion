@@ -107,6 +107,9 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--negro);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:200;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 .toast.ok{background:var(--verde);}
+.cond-toggle{padding:10px 14px;border-radius:20px;border:2px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:13px;font-weight:600;color:var(--gris-texto);transition:all 0.15s;min-height:44px;display:flex;align-items:center;user-select:none;}
+.cond-toggle.activo{border-color:var(--naranja);background:var(--naranja-claro);color:#9A3412;}
+.cond-toggle:active{transform:scale(0.96);}
 
 @media(min-width:560px){body{border-left:1px solid var(--gris-borde);border-right:1px solid var(--gris-borde);}}
 </style>
@@ -170,13 +173,13 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
           <option value="">Seleccionar subtipo...</option>
         </select>
       </div>
-      <!-- Gravedad solo para accidentes -->
+      <!-- Gravedad: para accidentes e incidentes. Oculto para observaciones y ambientales -->
       <div id="sec-gravedad" style="display:none;">
-        <label class="fl">Gravedad</label>
-        <div class="gravedad-grid">
-          <div class="grav-opt" onclick="selGravedad('sin_lesion',this,'sel-verde')"><div class="grav-icon">✅</div><div>Sin lesión</div></div>
-          <div class="grav-opt" onclick="selGravedad('leve',this,'sel-amarillo')"><div class="grav-icon">🩹</div><div>Leve</div></div>
-          <div class="grav-opt" onclick="selGravedad('grave',this,'sel-naranja')"><div class="grav-icon">🚑</div><div>Grave</div></div>
+        <label class="fl">¿Hubo lesionados?</label>
+        <div class="gravedad-grid" id="gravedad-grid">
+          <div class="grav-opt" onclick="selGravedad('sin_lesion',this,'sel-verde')"><div class="grav-icon">✅</div><div>Sin lesionados</div></div>
+          <div class="grav-opt" onclick="selGravedad('leve',this,'sel-amarillo')"><div class="grav-icon">🩹</div><div>Lesión leve</div></div>
+          <div class="grav-opt" onclick="selGravedad('grave',this,'sel-naranja')"><div class="grav-icon">🚑</div><div>Lesión grave</div></div>
           <div class="grav-opt" onclick="selGravedad('fatal',this,'sel-rojo')"><div class="grav-icon">🚨</div><div>Fatal</div></div>
         </div>
         <div class="aviso" id="aviso-grave">
@@ -213,6 +216,7 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
       </div>
       <div class="fg">
         <label class="fl">Área específica</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;" id="areas-sugeridas"></div>
         <input class="fi" id="area" placeholder="Ej: Taller de soldadura, Bodega, Patio...">
       </div>
     </div>
@@ -281,13 +285,13 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
         <textarea class="ft" id="accion-inmediata" rows="2" placeholder="¿Qué se hizo en el momento para controlar el daño?"></textarea>
       </div>
 
-      <div class="fg">
+      <div class="fg condicional" id="sec-agente">
         <label class="fl">Agente causante</label>
         <select class="fs" id="agente">
           <option value="">Seleccionar...</option>
           <option>Herramienta manual</option>
           <option>Maquinaria / equipo</option>
-          <option>Vehículo</option>
+          <option>Vehículo / grúa</option>
           <option>Material / carga</option>
           <option>Caída de altura</option>
           <option>Caída al mismo nivel</option>
@@ -295,31 +299,27 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
           <option>Sustancia química</option>
           <option>Electricidad</option>
           <option>Fuego / explosión</option>
+          <option>Zona no demarcada</option>
+          <option>Falta de señalética</option>
+          <option>Procedimiento incorrecto</option>
+          <option>Falta de supervisión</option>
+          <option>Diseño deficiente del área</option>
+          <option>EPP inadecuado o ausente</option>
           <option>Otro</option>
         </select>
       </div>
 
       <div class="fg">
         <label class="fl">Condiciones del entorno</label>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
-            <input type="checkbox" value="Iluminación deficiente"> Ilum. deficiente
-          </label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
-            <input type="checkbox" value="Piso mojado / resbaloso"> Piso mojado
-          </label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
-            <input type="checkbox" value="Ruido excesivo"> Ruido excesivo
-          </label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
-            <input type="checkbox" value="Calor extremo"> Calor extremo
-          </label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
-            <input type="checkbox" value="Sin EPP adecuado"> Sin EPP adecuado
-          </label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
-            <input type="checkbox" value="Área no señalizada"> Sin señalética
-          </label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="condiciones-wrap">
+          <div class="cond-toggle" onclick="toggleCond(this,'Iluminación deficiente')">💡 Ilum. deficiente</div>
+          <div class="cond-toggle" onclick="toggleCond(this,'Piso mojado / resbaloso')">💧 Piso mojado</div>
+          <div class="cond-toggle" onclick="toggleCond(this,'Ruido excesivo')">🔊 Ruido excesivo</div>
+          <div class="cond-toggle" onclick="toggleCond(this,'Calor extremo')">🌡️ Calor extremo</div>
+          <div class="cond-toggle" onclick="toggleCond(this,'Sin EPP adecuado')">⛑️ Sin EPP</div>
+          <div class="cond-toggle" onclick="toggleCond(this,'Área no señalizada')">🚧 Sin señalética</div>
+          <div class="cond-toggle" onclick="toggleCond(this,'Orden y limpieza deficiente')">🧹 Desorden</div>
+          <div class="cond-toggle" onclick="toggleCond(this,'Sobrecarga de trabajo')">⚡ Sobrecarga</div>
         </div>
       </div>
     </div>
@@ -485,7 +485,13 @@ function selTipo(tipo, el) {
   const sel = document.getElementById('subtipo');
   sel.innerHTML = '<option value="">Seleccionar subtipo...</option>' + SUBTIPOS[tipo].map(s => `<option>${s}</option>`).join('');
   document.getElementById('sec-subtipo').classList.add('visible');
-  document.getElementById('sec-gravedad').style.display = tipo === 'accidente' ? 'block' : 'none';
+  // Gravedad: solo para accidente e incidente
+  const mostrarGravedad = tipo === 'accidente' || tipo === 'incidente';
+  document.getElementById('sec-gravedad').style.display = mostrarGravedad ? 'block' : 'none';
+  // Agente causante: solo para accidente e incidente
+  const agenteSec = document.getElementById('sec-agente');
+  if (tipo === 'observacion' || tipo === 'ambiental') agenteSec.classList.remove('visible');
+  else agenteSec.classList.add('visible');
   estado.subtipo = ''; estado.gravedad = '';
 }
 
@@ -498,11 +504,32 @@ function selGravedad(g, el, cls) {
 }
 
 // ── LUGAR ─────────────────────────────────────────────────────
+const AREAS_POR_LUGAR = {
+  'Quillota': ['Taller soldadura','Bodega','Patio','Comedor','Oficinas','Estacionamiento'],
+  'Quilicura': ['Bodega principal','Taller','Patio maniobras','Comedor','Oficinas'],
+  'Maipú': ['Planta producción','Bodega','Patio','Oficinas','Comedor'],
+  'Cerrillos': ['Taller','Bodega','Patio exterior','Oficinas'],
+  'Oficina Central': ['Oficinas','Sala reuniones','Estacionamiento','Recepción'],
+  'Goodyear Moldes': ['Área montaje','Bodega faena','Patio','Oficina faena'],
+  'Carozzi Lontué': ['Área montaje','Bodega','Planta cliente','Exterior'],
+  'Sacyr Antofagasta': ['Área obras','Bodega faena','Campamento','Oficina faena'],
+};
+
 function selLugar(lugar, el) {
   estado.lugar = lugar;
   document.querySelectorAll('.lugar-opt').forEach(o => o.classList.remove('sel'));
   el.classList.add('sel');
   document.getElementById('lugar-otro-input').classList.remove('visible');
+  // Mostrar áreas sugeridas
+  const areas = AREAS_POR_LUGAR[lugar] || [];
+  const wrap = document.getElementById('areas-sugeridas');
+  wrap.innerHTML = areas.map(a => `<div onclick="selArea(this,'${a}')" style="padding:7px 12px;border-radius:20px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:12px;font-weight:600;color:var(--gris-texto);min-height:36px;display:flex;align-items:center;transition:all 0.15s;" class="area-sug">${a}</div>`).join('');
+}
+
+function selArea(el, area) {
+  document.querySelectorAll('.area-sug').forEach(a => { a.style.borderColor='var(--gris-borde)'; a.style.background='var(--blanco)'; a.style.color='var(--gris-texto)'; });
+  el.style.borderColor = 'var(--naranja)'; el.style.background = 'var(--naranja-claro)'; el.style.color = '#9A3412';
+  document.getElementById('area').value = area;
 }
 function selLugarOtro(el) {
   document.querySelectorAll('.lugar-opt').forEach(o => o.classList.remove('sel'));
@@ -547,9 +574,10 @@ function irPaso3() {
   estado.descripcion = desc;
   estado.accionInmediata = document.getElementById('accion-inmediata').value.trim();
   estado.agente = document.getElementById('agente').value;
-  estado.condiciones = [...document.querySelectorAll('.sec-body input[type=checkbox]:checked')].map(c => c.value);
-  // Mostrar campos lesión si es accidente
-  document.getElementById('campos-lesion').style.display = estado.tipo === 'accidente' ? 'block' : 'none';
+  estado.condiciones = condicionesSeleccionadas;
+  // Mostrar campos lesión solo si es accidente con lesionados
+  const hayLesion = estado.tipo === 'accidente' && estado.gravedad !== 'sin_lesion' && estado.gravedad !== '';
+  document.getElementById('campos-lesion').style.display = hayLesion ? 'block' : 'none';
   document.getElementById('paso2').style.display = 'none';
   document.getElementById('paso3').style.display = 'block';
   actualizarProgreso(3);
@@ -573,6 +601,13 @@ function mostrarCamposAfectado(v) {
 
 // ── VOZ ───────────────────────────────────────────────────────
 let recognition = null, grabando = false, textoVoz = '';
+let condicionesSeleccionadas = [];
+
+function toggleCond(el, valor) {
+  const activo = el.classList.toggle('activo');
+  if (activo) { condicionesSeleccionadas.push(valor); if(navigator.vibrate)navigator.vibrate(30); }
+  else condicionesSeleccionadas = condicionesSeleccionadas.filter(c => c !== valor);
+}
 const soportaVoz = ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
 
 function toggleMic() {
