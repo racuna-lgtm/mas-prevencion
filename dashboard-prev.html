@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Más prevención — Prevencionista</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul:#1B2E6E; --azul-mid:#243d8f; --azul-claro:#e8ecf8;
+  --naranja:#E87722; --naranja-claro:#fdf0e4; --naranja-mid:#d06818;
+  --blanco:#ffffff; --gris-bg:#f2f4f8; --gris-borde:#dde1ec;
+  --gris-texto:#5a6480; --gris-muted:#98a0b8; --negro:#0d1526;
+  --verde:#15803D; --verde-claro:#dcfce7;
+  --rojo:#dc2626; --rojo-claro:#fee2e2;
+  --amarillo:#854D0E; --amarillo-claro:#fef9c3;
+  --morado:#5B21B6; --morado-claro:#ede9fe;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro);min-height:100vh;max-width:480px;margin:0 auto;padding-bottom:90px;}
+
+.topbar{background:var(--azul);padding:0 18px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-logo{display:flex;align-items:center;gap:8px;}
+.topbar-icon{width:30px;height:30px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.topbar-nombre{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:#fff;}
+.topbar-nombre span{color:var(--naranja);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.topbar-user{font-size:12px;color:rgba(255,255,255,0.8);}
+.btn-salir{background:rgba(255,255,255,0.12);border:none;color:rgba(255,255,255,0.8);font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;font-family:'Barlow',sans-serif;}
+
+.body{padding:18px 16px;}
+
+/* BIENVENIDA */
+.bienvenida{background:var(--azul);border-radius:16px;padding:18px 20px;margin-bottom:18px;position:relative;overflow:hidden;}
+.bienvenida::after{content:'';position:absolute;right:-20px;top:-20px;width:100px;height:100px;background:var(--naranja);border-radius:50%;opacity:0.15;}
+.bienvenida-saludo{font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:3px;}
+.bienvenida-nombre{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:#fff;margin-bottom:6px;}
+.bienvenida-planta{font-size:12px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.12);display:inline-block;padding:3px 10px;border-radius:20px;}
+
+/* BTN NUEVO EVENTO */
+.btn-nuevo{display:flex;align-items:center;gap:14px;background:var(--naranja);border-radius:16px;padding:18px 20px;margin-bottom:18px;cursor:pointer;transition:all 0.15s;border:none;width:100%;font-family:'Barlow',sans-serif;text-decoration:none;}
+.btn-nuevo:active{transform:scale(0.98);}
+.btn-nuevo-icon{width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.btn-nuevo-texto{text-align:left;}
+.btn-nuevo-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#fff;}
+.btn-nuevo-sub{font-size:12px;color:rgba(255,255,255,0.85);margin-top:2px;}
+.btn-nuevo-arr{margin-left:auto;font-size:22px;color:rgba(255,255,255,0.7);flex-shrink:0;}
+
+/* TARJETAS PENDIENTES */
+.sec-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:var(--negro);margin-bottom:10px;}
+
+.pendiente-card{background:var(--blanco);border-radius:14px;border:1px solid var(--gris-borde);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;}
+.pendiente-card:active{transform:scale(0.98);}
+.pendiente-card.urgente{border-color:#fecaca;background:#fffafa;}
+.pendiente-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pendiente-id{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--azul);}
+.pendiente-tipo{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;}
+.t-acc{background:var(--rojo-claro);color:var(--rojo);}
+.t-inc{background:var(--amarillo-claro);color:var(--amarillo);}
+.estado-pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;margin-left:auto;}
+.e-investigando{background:var(--amarillo-claro);color:var(--amarillo);}
+.e-correctivas{background:var(--morado-claro);color:var(--morado);}
+.pendiente-desc{font-size:13px;color:var(--negro);line-height:1.4;margin-bottom:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.pendiente-meta{display:flex;gap:12px;font-size:11px;color:var(--gris-muted);}
+.pendiente-plazo{color:var(--rojo);font-weight:700;}
+
+/* MIS REGISTROS */
+.reg-item{background:var(--blanco);border-radius:12px;border:1px solid var(--gris-borde);padding:12px 14px;margin-bottom:8px;}
+.reg-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.reg-fecha{font-size:11px;color:var(--gris-muted);font-weight:600;}
+.reg-estado{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.e-registrado{background:var(--azul-claro);color:var(--azul);}
+.e-cerrado{background:var(--verde-claro);color:var(--verde);}
+.reg-tipo{font-size:11px;font-weight:600;margin-bottom:4px;}
+.reg-desc{font-size:13px;color:var(--negro);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.reg-lugar{font-size:11px;color:var(--gris-texto);margin-top:4px;}
+
+/* NAV BOTTOM */
+.nav-bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--blanco);border-top:1px solid var(--gris-borde);display:flex;padding:10px 0 18px;z-index:50;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0;font-size:11px;color:var(--gris-muted);font-weight:600;}
+.nav-item.activo{color:var(--naranja);}
+.nav-icono{font-size:22px;}
+
+.empty{text-align:center;padding:28px 20px;color:var(--gris-muted);font-size:13px;}
+.empty-icon{font-size:36px;margin-bottom:8px;}
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--negro);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:200;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{background:var(--verde);}
+
+@media(min-width:480px){body{border-left:1px solid var(--gris-borde);border-right:1px solid var(--gris-borde);}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-icon">🛡️</div>
+    <span class="topbar-nombre">Más<span>prevención</span></span>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-user" id="topbar-user"></span>
+    <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
+  </div>
+</div>
+
+<div class="body">
+
+  <div class="bienvenida">
+    <div class="bienvenida-saludo" id="bienvenida-saludo">Buenos días,</div>
+    <div class="bienvenida-nombre" id="bienvenida-nombre"></div>
+    <span class="bienvenida-planta" id="bienvenida-planta"></span>
+  </div>
+
+  <a href="mp-nuevo-evento.html" class="btn-nuevo">
+    <div class="btn-nuevo-icon">⚠️</div>
+    <div class="btn-nuevo-texto">
+      <div class="btn-nuevo-titulo">Registrar nuevo evento</div>
+      <div class="btn-nuevo-sub">Accidente, incidente u observación</div>
+    </div>
+    <div class="btn-nuevo-arr">›</div>
+  </a>
+
+  <div class="sec-titulo" id="sec-pendientes-titulo">Mis tareas pendientes</div>
+  <div id="pendientes-wrap"></div>
+
+  <div class="sec-titulo" style="margin-top:20px;">Mis registros recientes</div>
+  <div id="registros-wrap"></div>
+
+</div>
+
+<div class="nav-bottom">
+  <div class="nav-item activo">
+    <div class="nav-icono">🏠</div><span>Inicio</span>
+  </div>
+  <div class="nav-item" onclick="window.location.href='mp-nuevo-evento.html'">
+    <div class="nav-icono">➕</div><span>Registrar</span>
+  </div>
+  <div class="nav-item" onclick="mostrarMisRegistros()">
+    <div class="nav-icono">📋</div><span>Mis registros</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const usuario = JSON.parse(localStorage.getItem('mp_usuario') || 'null');
+if (!usuario || usuario.rol !== 'prevencionista') window.location.href = 'index.html';
+
+// Header
+const hora = new Date().getHours();
+const saludo = hora < 12 ? 'Buenos días,' : hora < 20 ? 'Buenas tardes,' : 'Buenas noches,';
+document.getElementById('bienvenida-saludo').textContent = saludo;
+document.getElementById('bienvenida-nombre').textContent = usuario.nombre.split(' ').slice(0,2).join(' ');
+document.getElementById('bienvenida-planta').textContent = '📍 ' + (usuario.planta || 'Socoval');
+document.getElementById('topbar-user').textContent = usuario.nombre.split(' ')[0];
+
+function getEventos() { return JSON.parse(localStorage.getItem('mp_eventos') || '[]'); }
+
+function estadoLabel(e) {
+  return {registrado:'Sin asignar',investigando:'Investigando',correctivas:'Con correctivas',cerrado:'Cerrado'}[e] || e;
+}
+
+function render() {
+  const todos = getEventos();
+  const misEventos = todos.filter(e => e.prevencionista_codigo === usuario.codigo);
+  const misTareas = todos.filter(e =>
+    e.asignado_a === usuario.codigo &&
+    (e.estado === 'investigando' || e.estado === 'correctivas')
+  );
+
+  // Pendientes
+  const secPend = document.getElementById('sec-pendientes-titulo');
+  const wrapPend = document.getElementById('pendientes-wrap');
+
+  if (misTareas.length === 0) {
+    secPend.textContent = 'Mis tareas pendientes';
+    wrapPend.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">✅</div>
+        Sin tareas pendientes asignadas por Rafael
+      </div>`;
+  } else {
+    secPend.textContent = `Mis tareas pendientes (${misTareas.length})`;
+    wrapPend.innerHTML = misTareas.map(e => {
+      const hoy = new Date();
+      const plazo = e.plazo_investigacion ? new Date(e.plazo_investigacion) : null;
+      const diasRestantes = plazo ? Math.ceil((plazo - hoy) / (1000*60*60*24)) : null;
+      const urgente = diasRestantes !== null && diasRestantes <= 2;
+      return `
+        <div class="pendiente-card ${urgente ? 'urgente' : ''}" onclick="verTarea('${e.id}')">
+          <div class="pendiente-header">
+            <span class="pendiente-id">${e.id}</span>
+            <span class="pendiente-tipo t-${e.tipo === 'accidente' ? 'acc' : 'inc'}">${e.subtipo}</span>
+            <span class="estado-pill e-${e.estado}">${estadoLabel(e.estado)}</span>
+          </div>
+          <div class="pendiente-desc">${e.descripcion}</div>
+          <div class="pendiente-meta">
+            <span>📍 ${e.lugar} · ${e.area}</span>
+            ${plazo ? `<span class="${urgente ? 'pendiente-plazo' : ''}">⏱ Plazo: ${plazo.toLocaleDateString('es-CL')}${urgente ? ' ⚠ URGENTE' : ''}</span>` : ''}
+          </div>
+          ${e.estado === 'investigando' ? `
+            <div style="margin-top:10px;">
+              <a href="mp-investigacion.html?id=${e.id}" style="display:inline-block;padding:7px 14px;background:var(--azul);color:#fff;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;font-family:'Barlow Condensed',sans-serif;">
+                Completar investigación →
+              </a>
+            </div>` : ''}
+          ${e.estado === 'correctivas' ? `
+            <div style="margin-top:10px;">
+              <a href="mp-correctivas.html?id=${e.id}" style="display:inline-block;padding:7px 14px;background:var(--morado);color:#fff;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;font-family:'Barlow Condensed',sans-serif;">
+                Registrar correctivas →
+              </a>
+            </div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  // Mis registros recientes
+  const wrapRegs = document.getElementById('registros-wrap');
+  const recientes = [...misEventos].sort((a,b) => new Date(b.fecha_registro) - new Date(a.fecha_registro)).slice(0, 5);
+
+  if (recientes.length === 0) {
+    wrapRegs.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📋</div>
+        Aún no has registrado eventos.<br>Toca el botón naranja para empezar.
+      </div>`;
+    return;
+  }
+
+  wrapRegs.innerHTML = recientes.map(e => `
+    <div class="reg-item">
+      <div class="reg-header">
+        <span class="reg-fecha">${e.id} · ${e.fecha} ${e.hora}</span>
+        <span class="reg-estado e-${e.estado}">${estadoLabel(e.estado)}</span>
+      </div>
+      <div class="reg-tipo">${e.tipo === 'accidente' ? '⚡' : e.tipo === 'incidente' ? '⚠️' : '👁'} ${e.subtipo}</div>
+      <div class="reg-desc">${e.descripcion}</div>
+      <div class="reg-lugar">📍 ${e.lugar} · ${e.area}</div>
+    </div>
+  `).join('');
+}
+
+function verTarea(id) {
+  window.location.href = `mp-investigacion.html?id=${id}`;
+}
+
+function mostrarMisRegistros() {
+  window.location.href = 'mp-mis-registros.html';
+}
+
+function cerrarSesion() {
+  localStorage.removeItem('mp_usuario');
+  window.location.href = 'index.html';
+}
+
+function mostrarToast(msg, ok) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (ok ? ' ok' : '') + ' show';
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+render();
+</script>
+</body>
+</html>
