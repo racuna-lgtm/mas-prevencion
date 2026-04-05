@@ -94,6 +94,10 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
 .btn-guardar:hover{background:var(--azul-mid);}
 .btn-guardar:disabled{background:var(--gris-borde);color:var(--gris-muted);cursor:not-allowed;}
 .btn-guardar.naranja{background:var(--naranja);}
+.foto-slot-ev{aspect-ratio:1;border-radius:10px;border:2px dashed var(--gris-borde);background:var(--gris-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:all 0.15s;min-height:80px;}
+.foto-slot-ev:active{transform:scale(0.96);}
+.foto-slot-ev img{width:100%;height:100%;object-fit:cover;border-radius:8px;}
+.foto-del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:5px;background:rgba(0,0,0,0.6);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;}
 
 /* CAMPOS CONDICIONALES */
 .condicional{display:none;}
@@ -278,6 +282,18 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
           </div>
         </div>
         <textarea class="ft" id="descripcion" rows="4" placeholder="O escribe aquí la descripción del evento..." style="margin-top:8px;"></textarea>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Evidencia fotográfica (opcional)</label>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;" id="fotos-evento-wrap">
+          <div class="foto-slot-ev" onclick="abrirCamaraEvento()" id="slot-0">
+            <div style="font-size:22px;margin-bottom:3px;">📷</div>
+            <div style="font-size:10px;font-weight:600;color:var(--gris-muted);text-align:center;">Agregar foto</div>
+          </div>
+        </div>
+        <input type="file" id="file-evento" accept="image/*" capture="environment" onchange="procesarFotoEvento(this)">
+        <div style="font-size:11px;color:var(--gris-muted);margin-top:4px;">Máximo 3 fotos · Toca para tomar o elegir de galería</div>
       </div>
 
       <div class="fg">
@@ -712,6 +728,7 @@ function guardarEvento() {
     atencion_medica: estado.atencionMedica || '-',
     dias_perdidos: estado.diasPerdidos || '-',
     accion_inmediata: estado.accionInmediata || 'No registrada',
+    fotos: fotosEvento,
     prevencionista_codigo: usuario.codigo,
     prevencionista_nombre: usuario.nombre,
     estado: 'registrado',
