@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Más prevención — Socoval</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul: #1B2E6E;
+  --azul-mid: #243d8f;
+  --azul-claro: #e8ecf8;
+  --naranja: #E87722;
+  --naranja-claro: #fdf0e4;
+  --blanco: #ffffff;
+  --gris-bg: #f2f4f8;
+  --gris-borde: #dde1ec;
+  --gris-texto: #5a6480;
+  --gris-muted: #98a0b8;
+  --negro: #0d1526;
+  --rojo: #dc2626;
+  --rojo-claro: #fef2f2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--gris-bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fondo geométrico Socoval */
+body::before {
+  content: '';
+  position: fixed;
+  top: -40%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: var(--azul);
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -30%;
+  left: -15%;
+  width: 500px;
+  height: 500px;
+  background: var(--naranja);
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+}
+
+/* LOGO / MARCA */
+.marca {
+  text-align: center;
+  margin-bottom: 28px;
+  animation: fadeDown 0.5s ease both;
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.logo-icon {
+  width: 48px; height: 48px;
+  background: var(--azul);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.logo-icon::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 18px; height: 18px;
+  background: var(--naranja);
+  border-radius: 6px 0 0 0;
+}
+.logo-shield {
+  font-size: 22px;
+  position: relative;
+  z-index: 1;
+}
+.logo-nombre {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  color: var(--azul);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.logo-nombre span { color: var(--naranja); }
+.logo-cliente {
+  font-size: 12px;
+  color: var(--gris-muted);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* CARD */
+.card {
+  background: var(--blanco);
+  border-radius: 22px;
+  border: 1px solid var(--gris-borde);
+  overflow: hidden;
+  animation: fadeUp 0.5s ease 0.1s both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* SELECTOR DE ROL */
+.rol-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--gris-borde);
+}
+.rol-btn {
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background: transparent;
+  font-family: 'Barlow', sans-serif;
+}
+.rol-btn:first-child { border-right: 1px solid var(--gris-borde); }
+.rol-btn .rol-icon { font-size: 24px; margin-bottom: 5px; display: block; }
+.rol-btn .rol-label {
+  font-size: 12px; font-weight: 600;
+  color: var(--gris-texto);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.rol-btn.activo {
+  background: var(--azul);
+}
+.rol-btn.activo .rol-label { color: rgba(255,255,255,0.9); }
+.rol-btn.activo-naranja { background: var(--naranja); }
+.rol-btn.activo-naranja .rol-label { color: rgba(255,255,255,0.9); }
+
+/* CUERPO DEL CARD */
+.card-body { padding: 28px 26px 32px; }
+
+.panel-titulo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--negro);
+  margin-bottom: 4px;
+}
+.panel-sub {
+  font-size: 13px;
+  color: var(--gris-muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* PIN GRID */
+.pin-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gris-texto);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+.pin-grid {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.pin-digit {
+  width: 58px; height: 68px;
+  border: 2.5px solid var(--gris-borde);
+  border-radius: 14px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  color: var(--negro);
+  text-align: center;
+  background: var(--gris-bg);
+  transition: all 0.15s;
+  caret-color: var(--azul);
+  -webkit-appearance: none;
+}
+.pin-digit:focus {
+  outline: none;
+  border-color: var(--azul);
+  background: var(--blanco);
+  transform: scale(1.05);
+}
+.pin-digit.lleno { border-color: var(--azul); background: var(--azul-claro); color: var(--azul); }
+.pin-digit.lleno-naranja { border-color: var(--naranja); background: var(--naranja-claro); color: var(--naranja); }
+.pin-digit.error { border-color: var(--rojo); background: var(--rojo-claro); animation: shake 0.4s ease; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+}
+
+.error-msg {
+  font-size: 13px;
+  color: var(--rojo);
+  font-weight: 600;
+  min-height: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* CÓDIGO ADICIONAL PREVENCIONISTAS */
+.codigo-wrap {
+  margin-bottom: 20px;
+}
+.codigo-input {
+  width: 100%;
+  padding: 13px 15px;
+  border: 2px solid var(--gris-borde);
+  border-radius: 12px;
+  font-size: 15px;
+  font-family: 'Barlow', sans-serif;
+  color: var(--negro);
+  background: var(--gris-bg);
+  transition: all 0.15s;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+.codigo-input:focus { outline: none; border-color: var(--naranja); background: var(--blanco); }
+.codigo-input::placeholder { font-weight: 400; letter-spacing: 0; color: var(--gris-muted); }
+
+/* BOTÓN ENTRAR */
+.btn-entrar {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 56px;
+}
+.btn-azul { background: var(--azul); color: #fff; }
+.btn-azul:hover { background: var(--azul-mid); }
+.btn-azul:disabled { background: var(--gris-borde); color: var(--gris-muted); cursor: not-allowed; }
+.btn-naranja { background: var(--naranja); color: #fff; }
+.btn-naranja:hover { background: #d06818; }
+.btn-naranja:disabled { background: var(--gris-borde); color: var(--gris-muted); cursor: not-allowed; }
+.btn-entrar:active:not(:disabled) { transform: scale(0.98); }
+
+.loading-ring {
+  width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--gris-muted);
+  animation: fadeUp 0.5s ease 0.25s both;
+}
+.footer strong { color: var(--azul); }
+
+/* DEMO BADGE */
+.demo-badge {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: var(--naranja);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--negro);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 100;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.ok { background: #15803D; }
+</style>
+</head>
+<body>
+
+<div class="demo-badge">Demo piloto</div>
+
+<div class="container">
+
+  <div class="marca">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <span class="logo-shield">🛡️</span>
+      </div>
+      <div class="logo-nombre">Más<span>prevención</span></div>
+    </div>
+    <div class="logo-cliente">Sistema SSOMA · Socoval</div>
+  </div>
+
+  <div class="card">
+
+    <!-- SELECTOR ROL -->
+    <div class="rol-selector">
+      <button class="rol-btn activo" id="btn-rafael" onclick="setRol('rafael')">
+        <span class="rol-icon">👨‍💼</span>
+        <span class="rol-label">Gerencia</span>
+      </button>
+      <button class="rol-btn" id="btn-prev" onclick="setRol('prevencionista')">
+        <span class="rol-icon">👷</span>
+        <span class="rol-label">Prevencionista</span>
+      </button>
+    </div>
+
+    <!-- CUERPO -->
+    <div class="card-body">
+
+      <!-- PANEL RAFAEL -->
+      <div id="panel-rafael">
+        <div class="panel-titulo">Acceso gerencia</div>
+        <div class="panel-sub">Ingresa tu PIN de 4 dígitos para acceder al panel de administración.</div>
+        <div class="pin-label">PIN de acceso</div>
+        <div class="pin-grid" id="pin-rafael-grid">
+          <input class="pin-digit" id="r0" maxlength="1" inputmode="numeric" autocomplete="off">
+          <input class="pin-digit" id="r1" maxlength="1" inputmode="numeric" autocomplete="off">
+          <input class="pin-digit" id="r2" maxlength="1" inputmode="numeric" autocomplete="off">
+          <input class="pin-digit" id="r3" maxlength="1" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="error-msg" id="error-rafael"></div>
+        <button class="btn-entrar btn-azul" id="btn-entrar-rafael" onclick="entrarRafael()" disabled>
+          Entrar al panel
+        </button>
+      </div>
+
+      <!-- PANEL PREVENCIONISTA -->
+      <div id="panel-prev" style="display:none;">
+        <div class="panel-titulo">Acceso prevencionista</div>
+        <div class="panel-sub">Ingresa tu código de usuario y PIN. Rafael te los asignó al registrarte.</div>
+        <div class="pin-label" style="margin-bottom:8px;">Código de usuario</div>
+        <div class="codigo-wrap">
+          <input class="codigo-input" id="codigo-prev" placeholder="Ej: PREV-001" maxlength="10" autocomplete="off" oninput="validarFormPrev()">
+        </div>
+        <div class="pin-label">PIN de acceso</div>
+        <div class="pin-grid" id="pin-prev-grid">
+          <input class="pin-digit" id="p0" maxlength="1" inputmode="numeric" autocomplete="off">
+          <input class="pin-digit" id="p1" maxlength="1" inputmode="numeric" autocomplete="off">
+          <input class="pin-digit" id="p2" maxlength="1" inputmode="numeric" autocomplete="off">
+          <input class="pin-digit" id="p3" maxlength="1" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="error-msg" id="error-prev"></div>
+        <button class="btn-entrar btn-naranja" id="btn-entrar-prev" onclick="entrarPrev()" disabled>
+          Entrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>Más prevención</strong> · Sistema SSOMA Socoval<br>
+    Versión demo piloto · Solo para uso interno
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── USUARIOS DEMO ─────────────────────────────────────────────
+const USUARIOS = {
+  rafael: {
+    nombre: 'Rafael Iván Acuña Guzmán',
+    rut: '13502544-5',
+    rol: 'gerencia',
+    pin: '1355', // Demo: últimos 4 del RUT
+    destino: 'dashboard-rafael.html'
+  },
+  prevencionistas: [
+    { codigo: 'PREV-001', nombre: 'Juan Pérez González', planta: 'Quillota', pin: '1234', destino: 'dashboard-prev.html' },
+    { codigo: 'PREV-002', nombre: 'María Soto Rojas', planta: 'Quilicura', pin: '2345', destino: 'dashboard-prev.html' },
+    { codigo: 'PREV-003', nombre: 'Carlos Muñoz López', planta: 'Maipú', pin: '3456', destino: 'dashboard-prev.html' },
+    { codigo: 'PREV-004', nombre: 'Ana Torres Vega', planta: 'Cerrillos', pin: '4567', destino: 'dashboard-prev.html' },
+    { codigo: 'PREV-005', nombre: 'Diego Ramos Castro', planta: 'Oficina Central', pin: '5678', destino: 'dashboard-prev.html' },
+  ]
+};
+
+let rolActual = 'rafael';
+
+// ── ROL ───────────────────────────────────────────────────────
+function setRol(rol) {
+  rolActual = rol;
+  document.getElementById('panel-rafael').style.display = rol === 'rafael' ? 'block' : 'none';
+  document.getElementById('panel-prev').style.display = rol === 'prevencionista' ? 'block' : 'none';
+  document.getElementById('btn-rafael').className = 'rol-btn' + (rol === 'rafael' ? ' activo' : '');
+  document.getElementById('btn-prev').className = 'rol-btn' + (rol === 'prevencionista' ? ' activo-naranja' : '');
+  limpiarErrores();
+  if (rol === 'rafael') setTimeout(() => document.getElementById('r0').focus(), 100);
+  else setTimeout(() => document.getElementById('codigo-prev').focus(), 100);
+}
+
+// ── PIN INPUTS ────────────────────────────────────────────────
+function setupPinInputs(prefijo, onComplete) {
+  const inputs = Array.from({length: 4}, (_, i) => document.getElementById(prefijo + i));
+  const esNaranja = prefijo === 'p';
+
+  inputs.forEach((inp, i) => {
+    inp.addEventListener('input', e => {
+      const val = e.target.value.replace(/\D/g, '');
+      inp.value = val ? val[val.length - 1] : '';
+      inp.classList.toggle(esNaranja ? 'lleno-naranja' : 'lleno', !!inp.value);
+      inp.classList.remove('error');
+      limpiarErrores();
+      if (inp.value && i < 3) inputs[i + 1].focus();
+      onComplete();
+    });
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) {
+        inputs[i - 1].focus();
+        inputs[i - 1].value = '';
+        inputs[i - 1].classList.remove(esNaranja ? 'lleno-naranja' : 'lleno');
+        onComplete();
+      }
+      if (e.key === 'Enter') {
+        if (prefijo === 'r') entrarRafael();
+        else entrarPrev();
+      }
+    });
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+      if (txt.length >= 4) {
+        inputs.forEach((d, j) => {
+          d.value = txt[j] || '';
+          d.classList.toggle(esNaranja ? 'lleno-naranja' : 'lleno', !!d.value);
+        });
+        inputs[3].focus();
+        onComplete();
+      }
+    });
+  });
+}
+
+function getPinRafael() { return ['r0','r1','r2','r3'].map(id => document.getElementById(id).value).join(''); }
+function getPinPrev() { return ['p0','p1','p2','p3'].map(id => document.getElementById(id).value).join(''); }
+
+function validarFormRafael() {
+  document.getElementById('btn-entrar-rafael').disabled = getPinRafael().length < 4;
+}
+
+function validarFormPrev() {
+  const codigo = document.getElementById('codigo-prev').value.trim();
+  const pin = getPinPrev();
+  document.getElementById('btn-entrar-prev').disabled = !codigo || pin.length < 4;
+}
+
+setupPinInputs('r', validarFormRafael);
+setupPinInputs('p', validarFormPrev);
+document.getElementById('codigo-prev').addEventListener('input', validarFormPrev);
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function entrarRafael() {
+  const pin = getPinRafael();
+  const btn = document.getElementById('btn-entrar-rafael');
+  btn.innerHTML = '<div class="loading-ring"></div>';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    if (pin === USUARIOS.rafael.pin) {
+      localStorage.setItem('mp_usuario', JSON.stringify({ ...USUARIOS.rafael, autenticado: true }));
+      mostrarToast('Bienvenido, Rafael', true);
+      setTimeout(() => window.location.href = 'dashboard-rafael.html', 900);
+    } else {
+      errorPin('rafael');
+      btn.innerHTML = 'Entrar al panel';
+      btn.disabled = false;
+    }
+  }, 700);
+}
+
+function entrarPrev() {
+  const codigo = document.getElementById('codigo-prev').value.trim().toUpperCase();
+  const pin = getPinPrev();
+  const btn = document.getElementById('btn-entrar-prev');
+  btn.innerHTML = '<div class="loading-ring"></div>';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    const usuario = USUARIOS.prevencionistas.find(u => u.codigo === codigo && u.pin === pin);
+    if (usuario) {
+      localStorage.setItem('mp_usuario', JSON.stringify({ ...usuario, rol: 'prevencionista', autenticado: true }));
+      mostrarToast('Bienvenido, ' + usuario.nombre.split(' ')[0], true);
+      setTimeout(() => window.location.href = 'dashboard-prev.html', 900);
+    } else {
+      const existeCodigo = USUARIOS.prevencionistas.find(u => u.codigo === codigo);
+      document.getElementById('error-prev').textContent = existeCodigo ? 'PIN incorrecto. Verifica e intenta de nuevo.' : 'Código de usuario no reconocido.';
+      errorPin('prev');
+      btn.innerHTML = 'Entrar';
+      btn.disabled = false;
+    }
+  }, 700);
+}
+
+function errorPin(prefijo) {
+  const pre = prefijo === 'rafael' ? 'r' : 'p';
+  ['0','1','2','3'].forEach(n => {
+    const el = document.getElementById(pre + n);
+    el.classList.add('error');
+    el.value = '';
+    el.classList.remove('lleno', 'lleno-naranja');
+    setTimeout(() => el.classList.remove('error'), 500);
+  });
+  document.getElementById(pre + '0').focus();
+  if (prefijo === 'rafael') {
+    document.getElementById('error-rafael').textContent = 'PIN incorrecto. Intenta de nuevo.';
+    document.getElementById('btn-entrar-rafael').disabled = true;
+  } else {
+    document.getElementById('btn-entrar-prev').disabled = true;
+  }
+}
+
+function limpiarErrores() {
+  document.getElementById('error-rafael').textContent = '';
+  document.getElementById('error-prev').textContent = '';
+}
+
+function mostrarToast(msg, ok) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (ok ? ' ok' : '') + ' show';
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Focus inicial
+setTimeout(() => document.getElementById('r0').focus(), 300);
+
+// Hint demo
+setTimeout(() => mostrarToast('Demo: PIN Rafael = 1355', false), 1500);
+</script>
+</body>
+</html>
