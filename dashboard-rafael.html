@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Más prevención — Dashboard Gerencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul: #1B2E6E; --azul-mid: #243d8f; --azul-claro: #e8ecf8;
+  --naranja: #E87722; --naranja-claro: #fdf0e4;
+  --blanco: #ffffff; --gris-bg: #f2f4f8; --gris-card: #ffffff;
+  --gris-borde: #dde1ec; --gris-texto: #5a6480; --gris-muted: #98a0b8;
+  --negro: #0d1526;
+  --verde: #15803D; --verde-claro: #dcfce7;
+  --rojo: #dc2626; --rojo-claro: #fee2e2;
+  --amarillo: #854D0E; --amarillo-claro: #fef9c3;
+  --morado: #5B21B6; --morado-claro: #ede9fe;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Barlow', sans-serif; background: var(--gris-bg); color: var(--negro); min-height: 100vh; }
+
+/* TOPBAR */
+.topbar {
+  background: var(--azul);
+  padding: 0 24px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar-logo { display: flex; align-items: center; gap: 10px; }
+.topbar-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.15); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.topbar-nombre { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 18px; color: #fff; }
+.topbar-nombre span { color: var(--naranja); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-user { font-size: 13px; color: rgba(255,255,255,0.8); }
+.topbar-badge { background: var(--naranja); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+.btn-salir { background: rgba(255,255,255,0.12); border: none; color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-family: 'Barlow', sans-serif; }
+.btn-salir:hover { background: rgba(255,255,255,0.2); }
+
+/* LAYOUT */
+.main { max-width: 1200px; margin: 0 auto; padding: 24px 20px 40px; }
+.page-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 28px; color: var(--negro); margin-bottom: 4px; }
+.page-sub { font-size: 14px; color: var(--gris-texto); margin-bottom: 24px; }
+
+/* KPI CARDS */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.kpi-card { background: var(--blanco); border-radius: 14px; border: 1px solid var(--gris-borde); padding: 18px 20px; }
+.kpi-label { font-size: 12px; font-weight: 600; color: var(--gris-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.kpi-valor { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 38px; line-height: 1; margin-bottom: 4px; }
+.kpi-sub { font-size: 12px; color: var(--gris-texto); }
+.kpi-accent { width: 3px; height: 36px; border-radius: 3px; float: right; margin-top: -44px; }
+
+/* GRID 2 COL */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.grid-3-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+/* CARDS */
+.card { background: var(--blanco); border-radius: 14px; border: 1px solid var(--gris-borde); }
+.card-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--gris-borde); display: flex; align-items: center; justify-content: space-between; }
+.card-titulo { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px; color: var(--negro); }
+.card-body { padding: 16px 20px; }
+
+/* ALERTAS */
+.alerta { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; }
+.alerta:last-child { margin-bottom: 0; }
+.alerta-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alerta-texto { font-size: 13px; font-weight: 600; color: var(--negro); margin-bottom: 2px; }
+.alerta-sub { font-size: 12px; color: var(--gris-texto); }
+.alerta-grave { background: var(--rojo-claro); border: 1px solid #fecaca; }
+.alerta-pendiente { background: var(--amarillo-claro); border: 1px solid #fde68a; }
+.alerta-info { background: var(--azul-claro); border: 1px solid #bfdbfe; }
+.btn-alerta { margin-left: auto; flex-shrink: 0; padding: 6px 12px; border-radius: 8px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Barlow', sans-serif; }
+.btn-alerta-rojo { background: var(--rojo); color: #fff; }
+.btn-alerta-amarillo { background: var(--amarillo); color: #fff; }
+.btn-alerta-azul { background: var(--azul); color: #fff; }
+
+/* TABLA EVENTOS */
+.tabla { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tabla th { text-align: left; font-size: 11px; font-weight: 700; color: var(--gris-muted); text-transform: uppercase; letter-spacing: 0.05em; padding: 0 12px 10px; border-bottom: 1px solid var(--gris-borde); }
+.tabla td { padding: 12px; border-bottom: 1px solid #f5f6fa; vertical-align: middle; }
+.tabla tr:last-child td { border-bottom: none; }
+.tabla tr:hover td { background: #fafbff; }
+
+.estado-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+.e-registrado { background: var(--azul-claro); color: var(--azul); }
+.e-investigando { background: var(--amarillo-claro); color: var(--amarillo); }
+.e-correctivas { background: var(--morado-claro); color: var(--morado); }
+.e-cerrado { background: var(--verde-claro); color: var(--verde); }
+.e-grave { background: var(--rojo-claro); color: var(--rojo); }
+
+.tipo-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
+.t-accidente { background: #fee2e2; color: #991b1b; }
+.t-incidente { background: #fef9c3; color: #854d0e; }
+.t-observacion { background: #dcfce7; color: #15803d; }
+
+.lugar-tag { font-size: 12px; color: var(--gris-texto); }
+
+.btn-accion { padding: 5px 10px; border-radius: 7px; border: 1.5px solid var(--gris-borde); background: var(--blanco); font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Barlow', sans-serif; color: var(--azul); transition: all 0.15s; }
+.btn-accion:hover { background: var(--azul-claro); border-color: var(--azul); }
+.btn-accion-naranja { border-color: var(--naranja); color: var(--naranja); }
+.btn-accion-naranja:hover { background: var(--naranja-claro); }
+
+/* FILTROS */
+.filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.filtro { padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--gris-borde); background: var(--blanco); font-size: 12px; font-weight: 600; cursor: pointer; color: var(--gris-texto); transition: all 0.15s; font-family: 'Barlow', sans-serif; }
+.filtro.activo { background: var(--azul); border-color: var(--azul); color: #fff; }
+.filtro:hover:not(.activo) { border-color: var(--azul); color: var(--azul); }
+
+/* BARRAS */
+.barra-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.barra-label { font-size: 12px; font-weight: 600; color: var(--negro); width: 90px; flex-shrink: 0; }
+.barra-wrap { flex: 1; height: 10px; background: var(--gris-bg); border-radius: 10px; overflow: hidden; }
+.barra-fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
+.barra-num { font-size: 12px; font-weight: 700; color: var(--gris-texto); width: 28px; text-align: right; }
+
+/* MODAL ASIGNAR */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(13,21,38,0.6); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--blanco); border-radius: 18px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+.modal-header { padding: 20px 22px 16px; border-bottom: 1px solid var(--gris-borde); display: flex; align-items: center; justify-content: space-between; }
+.modal-titulo { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 20px; }
+.modal-close { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--gris-borde); background: var(--gris-bg); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 20px 22px; }
+.modal-footer { padding: 14px 22px 20px; border-top: 1px solid var(--gris-borde); display: flex; gap: 10px; justify-content: flex-end; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--gris-texto); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; display: block; }
+.form-select, .form-input { width: 100%; padding: 11px 13px; border: 1.5px solid var(--gris-borde); border-radius: 10px; font-size: 14px; font-family: 'Barlow', sans-serif; color: var(--negro); background: var(--blanco); }
+.form-select:focus, .form-input:focus { outline: none; border-color: var(--azul); }
+.btn-primary { padding: 12px 22px; border-radius: 10px; border: none; background: var(--azul); color: #fff; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 16px; cursor: pointer; }
+.btn-secondary { padding: 12px 18px; border-radius: 10px; border: 1.5px solid var(--gris-borde); background: var(--blanco); color: var(--gris-texto); font-family: 'Barlow', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; }
+
+/* EVENTO DETALLE */
+.detalle-field { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f5f6fa; font-size: 13px; }
+.detalle-field:last-child { border-bottom: none; }
+.detalle-key { color: var(--gris-texto); font-weight: 500; }
+.detalle-val { color: var(--negro); font-weight: 600; text-align: right; max-width: 60%; }
+
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--negro); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; transform: translateY(80px); opacity: 0; transition: all 0.3s; z-index: 300; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.ok { background: var(--verde); }
+.toast.warn { background: var(--naranja); }
+
+@media (max-width: 900px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-2, .grid-3-1 { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .main { padding: 16px 14px 40px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="topbar-icon">🛡️</div>
+    <span class="topbar-nombre">Más<span>prevención</span></span>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-user" id="topbar-user">Rafael Acuña</span>
+    <span class="topbar-badge">Gerencia</span>
+    <button class="btn-salir" onclick="cerrarSesion()">Salir</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="page-title" id="page-title">Panel de gestión SSOMA</div>
+  <div class="page-sub" id="page-sub">Domingo 5 de abril 2026 · Todas las plantas y proyectos</div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Eventos este mes</div>
+      <div class="kpi-valor" style="color:var(--azul);" id="kpi-total">0</div>
+      <div class="kpi-sub" id="kpi-total-sub">Sin eventos registrados</div>
+      <div class="kpi-accent" style="background:var(--azul);"></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Sin investigar</div>
+      <div class="kpi-valor" style="color:var(--rojo);" id="kpi-sin-inv">0</div>
+      <div class="kpi-sub">Requieren asignación</div>
+      <div class="kpi-accent" style="background:var(--rojo);"></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Correctivas vencidas</div>
+      <div class="kpi-valor" style="color:var(--naranja);" id="kpi-vencidas">0</div>
+      <div class="kpi-sub">Plazo cumplido sin cierre</div>
+      <div class="kpi-accent" style="background:var(--naranja);"></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Cerrados este mes</div>
+      <div class="kpi-valor" style="color:var(--verde);" id="kpi-cerrados">0</div>
+      <div class="kpi-sub">Investigados y aprobados</div>
+      <div class="kpi-accent" style="background:var(--verde);"></div>
+    </div>
+  </div>
+
+  <!-- ALERTAS + DISTRIBUCIÓN -->
+  <div class="grid-3-1">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-titulo">🔔 Alertas y pendientes</span>
+        <span id="alertas-count" style="font-size:12px;color:var(--gris-muted);">0 alertas</span>
+      </div>
+      <div class="card-body" id="alertas-body">
+        <div style="text-align:center;padding:20px;color:var(--gris-muted);font-size:13px;">
+          Sin alertas activas ✓
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><span class="card-titulo">Por tipo</span></div>
+      <div class="card-body" id="chart-tipos">
+        <div style="text-align:center;padding:20px;color:var(--gris-muted);font-size:12px;">Sin datos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA EVENTOS -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header">
+      <span class="card-titulo">Todos los eventos</span>
+      <a href="mp-nuevo-evento.html" style="text-decoration:none;">
+        <button style="padding:8px 16px;border-radius:9px;border:none;background:var(--naranja);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;cursor:pointer;">+ Nuevo evento</button>
+      </a>
+    </div>
+    <div class="card-body">
+      <div class="filtros" id="filtros">
+        <div class="filtro activo" onclick="filtrar('todos',this)">Todos</div>
+        <div class="filtro" onclick="filtrar('registrado',this)">Sin asignar</div>
+        <div class="filtro" onclick="filtrar('investigando',this)">Investigando</div>
+        <div class="filtro" onclick="filtrar('correctivas',this)">Con correctivas</div>
+        <div class="filtro" onclick="filtrar('cerrado',this)">Cerrados</div>
+        <div class="filtro" onclick="filtrar('grave',this)">⚠ Graves</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="tabla" id="tabla-eventos">
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Descripción</th>
+              <th>Lugar</th>
+              <th>Prevencionista</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-eventos"></tbody>
+        </table>
+        <div id="tabla-empty" style="text-align:center;padding:40px;color:var(--gris-muted);font-size:14px;">
+          <div style="font-size:36px;margin-bottom:10px;">📋</div>
+          No hay eventos registrados aún.<br>
+          <a href="mp-nuevo-evento.html" style="color:var(--azul);font-weight:600;text-decoration:none;">Registrar el primer evento →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISTRIBUCIÓN POR LUGAR -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-titulo">Eventos por planta / proyecto</span></div>
+      <div class="card-body" id="chart-lugares">
+        <div style="text-align:center;padding:20px;color:var(--gris-muted);font-size:12px;">Sin datos</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-titulo">Actividad reciente</span></div>
+      <div class="card-body" id="actividad-reciente">
+        <div style="text-align:center;padding:20px;color:var(--gris-muted);font-size:12px;">Sin actividad registrada</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ASIGNAR INVESTIGACIÓN -->
+<div class="modal-overlay" id="modal-asignar" onclick="cerrarModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-titulo">Asignar investigación</span>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-asignar-body"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-primary" onclick="confirmarAsignacion()">Asignar investigación</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE EVENTO -->
+<div class="modal-overlay" id="modal-detalle" onclick="cerrarModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-titulo" id="modal-detalle-titulo">Detalle del evento</span>
+      <button class="modal-close" onclick="cerrarModalDetalle()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-detalle-body"></div>
+    <div class="modal-footer" id="modal-detalle-footer"></div>
+  </div>
+</div>
+
+<!-- MODAL APROBAR CIERRE -->
+<div class="modal-overlay" id="modal-aprobar" onclick="cerrarModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-titulo">Aprobar cierre de investigación</span>
+      <button class="modal-close" onclick="document.getElementById('modal-aprobar').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--verde-claro);border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;color:var(--verde);line-height:1.6;">
+        Al aprobar el cierre, el evento quedará en estado <strong>Cerrado</strong> y no podrá modificarse. Esta acción queda registrada en el historial de auditoría.
+      </div>
+      <div class="form-group">
+        <label class="form-label">Observaciones de cierre (opcional)</label>
+        <textarea class="form-input" id="obs-cierre" rows="3" placeholder="Ej: Investigación completa. Medidas correctivas implementadas satisfactoriamente..." style="resize:none;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="document.getElementById('modal-aprobar').classList.remove('open')">Cancelar</button>
+      <button class="btn-primary" style="background:var(--verde);" onclick="confirmarCierre()">✓ Aprobar y cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────
+const usuario = JSON.parse(localStorage.getItem('mp_usuario') || 'null');
+if (!usuario || usuario.rol !== 'gerencia') window.location.href = 'index.html';
+
+document.getElementById('topbar-user').textContent = usuario.nombre.split(' ').slice(0,2).join(' ');
+document.getElementById('page-sub').textContent =
+  new Date().toLocaleDateString('es-CL', {weekday:'long',day:'numeric',month:'long',year:'numeric'}).replace(/^\w/,c=>c.toUpperCase()) +
+  ' · Todas las plantas y proyectos';
+
+// ── DATOS DEMO ────────────────────────────────────────────────
+const PREVENCIONISTAS_DEMO = [
+  { codigo:'PREV-001', nombre:'Juan Pérez González', planta:'Quillota' },
+  { codigo:'PREV-002', nombre:'María Soto Rojas', planta:'Quilicura' },
+  { codigo:'PREV-003', nombre:'Carlos Muñoz López', planta:'Maipú' },
+  { codigo:'PREV-004', nombre:'Ana Torres Vega', planta:'Cerrillos' },
+  { codigo:'PREV-005', nombre:'Diego Ramos Castro', planta:'Oficina Central' },
+  { codigo:'RAFAEL-ADM', nombre:'Rafael Acuña Guzmán', planta:'Todas' },
+];
+
+// Cargar eventos desde localStorage (registrados por prevencionistas)
+function getEventos() {
+  return JSON.parse(localStorage.getItem('mp_eventos') || '[]');
+}
+function saveEventos(evs) {
+  localStorage.setItem('mp_eventos', JSON.stringify(evs));
+}
+
+// Datos demo iniciales si no hay nada
+function initDemoData() {
+  if (getEventos().length > 0) return;
+  const demos = [
+    {
+      id: 'EV-001', num: 1,
+      fecha: '2026-04-03', hora: '08:45',
+      tipo: 'accidente', subtipo: 'Accidente de trabajo',
+      gravedad: 'leve',
+      descripcion: 'Trabajador sufrió corte en mano derecha al manipular material con bordes sin protección en taller de soldadura.',
+      lugar_tipo: 'planta', lugar: 'Quillota', area: 'Taller de soldadura',
+      afectado_nombre: 'Pedro Ramírez Silva', afectado_rut: '15234567-8',
+      afectado_cargo: 'Operario soldador', afectado_supervisor: 'Jorge Castillo',
+      afectado_tipo: 'Trabajador Socoval',
+      parte_cuerpo: 'Mano derecha', tipo_lesion: 'Corte', agente: 'Material con bordes',
+      atencion_medica: 'Primeros auxilios', dias_perdidos: '1-3',
+      accion_inmediata: 'Se realizó curación y se aísla el material sin EPP.',
+      prevencionista_codigo: 'PREV-001', prevencionista_nombre: 'Juan Pérez González',
+      estado: 'investigando', asignado_a: 'PREV-001',
+      plazo_investigacion: '2026-04-10',
+      fecha_registro: '2026-04-03T09:12:00',
+      historial: [
+        { fecha: '2026-04-03T09:12:00', usuario: 'Juan Pérez', accion: 'Evento registrado' },
+        { fecha: '2026-04-03T10:30:00', usuario: 'Rafael Acuña', accion: 'Investigación asignada a Juan Pérez. Plazo: 10/04/2026' }
+      ]
+    },
+    {
+      id: 'EV-002', num: 2,
+      fecha: '2026-04-04', hora: '14:20',
+      tipo: 'incidente', subtipo: 'Casi accidente (near miss)',
+      gravedad: 'sin_lesion',
+      descripcion: 'Grúa horquilla estuvo a punto de impactar a peatón en pasillo de tránsito no demarcado. No hubo lesionados.',
+      lugar_tipo: 'planta', lugar: 'Quilicura', area: 'Bodega principal',
+      afectado_nombre: 'N/A - Sin lesionados', afectado_rut: '-',
+      afectado_cargo: '-', afectado_supervisor: 'Héctor Vega',
+      afectado_tipo: '-',
+      parte_cuerpo: '-', tipo_lesion: '-', agente: 'Vehículo industrial',
+      atencion_medica: 'No', dias_perdidos: '0',
+      accion_inmediata: 'Se detuvo operación de grúa y se demarcó pasillo de emergencia.',
+      prevencionista_codigo: 'PREV-002', prevencionista_nombre: 'María Soto Rojas',
+      estado: 'registrado',
+      fecha_registro: '2026-04-04T14:35:00',
+      historial: [
+        { fecha: '2026-04-04T14:35:00', usuario: 'María Soto', accion: 'Evento registrado' }
+      ]
+    },
+    {
+      id: 'EV-003', num: 3,
+      fecha: '2026-04-01', hora: '07:30',
+      tipo: 'accidente', subtipo: 'Accidente de trabajo',
+      gravedad: 'grave',
+      descripcion: 'Caída de altura desde andamio a 2,5 metros. Trabajador contratista sin arnés. Traslado a hospital.',
+      lugar_tipo: 'proyecto', lugar: 'Carozzi Lontué', area: 'Área de montaje',
+      afectado_nombre: 'Luis Hernández Mora', afectado_rut: '12890456-3',
+      afectado_cargo: 'Montajista', afectado_supervisor: 'Ricardo Flores',
+      afectado_tipo: 'Contratista',
+      parte_cuerpo: 'Pierna izquierda / tórax', tipo_lesion: 'Fractura', agente: 'Caída de altura',
+      atencion_medica: 'Hospital', dias_perdidos: 'Más de 7',
+      accion_inmediata: 'Llamada ambulancia, paralización faena, aviso a empresa contratista.',
+      prevencionista_codigo: 'PREV-003', prevencionista_nombre: 'Carlos Muñoz López',
+      estado: 'correctivas',
+      asignado_a: 'PREV-003',
+      plazo_investigacion: '2026-04-08',
+      correctivas: [
+        { descripcion: 'Capacitación trabajo en altura a todos los contratistas', responsable: 'PREV-003', plazo: '2026-04-15', estado: 'pendiente' },
+        { descripcion: 'Revisión y certificación de todos los arneses en faena', responsable: 'PREV-003', plazo: '2026-04-07', estado: 'vencida' },
+        { descripcion: 'Implementar permiso de trabajo en altura', responsable: 'PREV-003', plazo: '2026-04-20', estado: 'en_curso' },
+      ],
+      fecha_registro: '2026-04-01T08:00:00',
+      historial: [
+        { fecha: '2026-04-01T08:00:00', usuario: 'Carlos Muñoz', accion: 'Evento registrado' },
+        { fecha: '2026-04-01T09:15:00', usuario: 'Rafael Acuña', accion: '⚠ ALERTA GRAVE enviada. Plazo legal 24h para notificación SEREMI.' },
+        { fecha: '2026-04-01T10:00:00', usuario: 'Rafael Acuña', accion: 'Investigación asignada a Carlos Muñoz. Plazo: 08/04/2026' },
+        { fecha: '2026-04-03T16:00:00', usuario: 'Carlos Muñoz', accion: 'Investigación completada. 3 medidas correctivas propuestas.' }
+      ]
+    }
+  ];
+  saveEventos(demos);
+}
+
+initDemoData();
+
+// ── ESTADO ────────────────────────────────────────────────────
+let filtroActual = 'todos';
+let eventoSeleccionado = null;
+
+// ── RENDER PRINCIPAL ──────────────────────────────────────────
+function render() {
+  const eventos = getEventos();
+  const hoy = new Date();
+  const mesActual = hoy.getMonth();
+  const anioActual = hoy.getFullYear();
+  const eventosMes = eventos.filter(e => {
+    const f = new Date(e.fecha);
+    return f.getMonth() === mesActual && f.getFullYear() === anioActual;
+  });
+
+  // KPIs
+  document.getElementById('kpi-total').textContent = eventosMes.length;
+  document.getElementById('kpi-total-sub').textContent = eventosMes.length === 0 ? 'Sin eventos registrados' : `${eventosMes.filter(e=>e.tipo==='accidente').length} accidente(s) · ${eventosMes.filter(e=>e.tipo==='incidente').length} incidente(s)`;
+  document.getElementById('kpi-sin-inv').textContent = eventos.filter(e => e.estado === 'registrado').length;
+  document.getElementById('kpi-cerrados').textContent = eventosMes.filter(e => e.estado === 'cerrado').length;
+
+  // Correctivas vencidas
+  let vencidas = 0;
+  eventos.forEach(e => { if (e.correctivas) e.correctivas.forEach(c => { if (c.estado === 'vencida') vencidas++; }); });
+  document.getElementById('kpi-vencidas').textContent = vencidas;
+
+  renderAlertas(eventos);
+  renderTabla(eventos);
+  renderChartTipos(eventosMes);
+  renderChartLugares(eventosMes);
+  renderActividad(eventos);
+}
+
+function renderAlertas(eventos) {
+  const alertas = [];
+  eventos.forEach(e => {
+    if (e.gravedad === 'grave' || e.gravedad === 'fatal') {
+      alertas.push({ tipo: 'grave', texto: `Evento grave — ${e.lugar}`, sub: `${e.subtipo} · ${e.fecha} · ${e.afectado_nombre}`, evento: e });
+    }
+    if (e.estado === 'registrado') {
+      alertas.push({ tipo: 'pendiente', texto: `Sin investigación asignada — Ev. ${e.id}`, sub: `${e.subtipo} · ${e.lugar} · Registrado ${new Date(e.fecha_registro).toLocaleDateString('es-CL')}`, evento: e });
+    }
+  });
+  eventos.forEach(e => {
+    if (e.correctivas) e.correctivas.forEach(c => {
+      if (c.estado === 'vencida') alertas.push({ tipo: 'pendiente', texto: `Correctiva vencida — Ev. ${e.id}`, sub: c.descripcion, evento: e });
+    });
+  });
+
+  document.getElementById('alertas-count').textContent = alertas.length + ' alerta' + (alertas.length !== 1 ? 's' : '');
+  if (alertas.length === 0) {
+    document.getElementById('alertas-body').innerHTML = '<div style="text-align:center;padding:20px;color:var(--gris-muted);font-size:13px;">Sin alertas activas ✓</div>';
+    return;
+  }
+  document.getElementById('alertas-body').innerHTML = alertas.map(a => `
+    <div class="alerta alerta-${a.tipo === 'grave' ? 'grave' : 'pendiente'}">
+      <span class="alerta-icon">${a.tipo === 'grave' ? '🚨' : '⚠️'}</span>
+      <div style="flex:1;">
+        <div class="alerta-texto">${a.texto}</div>
+        <div class="alerta-sub">${a.sub}</div>
+      </div>
+      ${a.evento.estado === 'registrado' ? `<button class="btn-alerta btn-alerta-azul" onclick="abrirAsignar('${a.evento.id}')">Asignar</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderTabla(eventos) {
+  const filtrados = filtroActual === 'todos' ? eventos : eventos.filter(e => {
+    if (filtroActual === 'grave') return e.gravedad === 'grave' || e.gravedad === 'fatal';
+    return e.estado === filtroActual;
+  });
+
+  document.getElementById('tabla-empty').style.display = filtrados.length === 0 ? 'block' : 'none';
+  document.getElementById('tbody-eventos').innerHTML = filtrados.map(e => `
+    <tr>
+      <td style="font-weight:700;color:var(--azul);font-size:12px;">${e.id}</td>
+      <td style="font-size:12px;color:var(--gris-texto);">${e.fecha}<br>${e.hora}</td>
+      <td>
+        <span class="tipo-badge t-${e.tipo}">${e.tipo === 'accidente' ? '⚡ Accidente' : e.tipo === 'incidente' ? '⚠ Incidente' : '👁 Observación'}</span>
+        ${e.gravedad === 'grave' || e.gravedad === 'fatal' ? '<br><span style="font-size:10px;color:var(--rojo);font-weight:700;">🚨 GRAVE</span>' : ''}
+      </td>
+      <td style="max-width:220px;">
+        <div style="font-size:13px;font-weight:500;color:var(--negro);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;" title="${e.descripcion}">${e.descripcion}</div>
+        <div style="font-size:11px;color:var(--gris-muted);">${e.subtipo}</div>
+      </td>
+      <td><div style="font-size:13px;font-weight:500;">${e.lugar}</div><div style="font-size:11px;color:var(--gris-muted);">${e.area}</div></td>
+      <td style="font-size:12px;">${e.prevencionista_nombre.split(' ').slice(0,2).join(' ')}</td>
+      <td><span class="estado-badge e-${e.estado}">${estadoLabel(e.estado)}</span></td>
+      <td>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          <button class="btn-accion" onclick="abrirDetalle('${e.id}')">Ver</button>
+          ${e.estado === 'registrado' ? `<button class="btn-accion btn-accion-naranja" onclick="abrirAsignar('${e.id}')">Asignar</button>` : ''}
+          ${e.estado === 'correctivas' ? `<button class="btn-accion" style="border-color:var(--verde);color:var(--verde);" onclick="abrirAprobar('${e.id}')">Aprobar</button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function estadoLabel(e) {
+  return { registrado:'Sin asignar', investigando:'Investigando', correctivas:'Con correctivas', cerrado:'Cerrado', grave:'Grave' }[e] || e;
+}
+
+function renderChartTipos(eventos) {
+  if (eventos.length === 0) return;
+  const acc = eventos.filter(e=>e.tipo==='accidente').length;
+  const inc = eventos.filter(e=>e.tipo==='incidente').length;
+  const obs = eventos.filter(e=>e.tipo==='observacion').length;
+  const max = Math.max(acc, inc, obs, 1);
+  document.getElementById('chart-tipos').innerHTML = `
+    <div class="barra-item"><div class="barra-label">Accidentes</div><div class="barra-wrap"><div class="barra-fill" style="width:${acc/max*100}%;background:var(--rojo);"></div></div><div class="barra-num">${acc}</div></div>
+    <div class="barra-item"><div class="barra-label">Incidentes</div><div class="barra-wrap"><div class="barra-fill" style="width:${inc/max*100}%;background:var(--naranja);"></div></div><div class="barra-num">${inc}</div></div>
+    <div class="barra-item"><div class="barra-label">Observaciones</div><div class="barra-wrap"><div class="barra-fill" style="width:${obs/max*100}%;background:var(--verde);"></div></div><div class="barra-num">${obs}</div></div>
+  `;
+}
+
+function renderChartLugares(eventos) {
+  if (eventos.length === 0) return;
+  const conteo = {};
+  eventos.forEach(e => { conteo[e.lugar] = (conteo[e.lugar] || 0) + 1; });
+  const max = Math.max(...Object.values(conteo), 1);
+  document.getElementById('chart-lugares').innerHTML = Object.entries(conteo)
+    .sort((a,b) => b[1]-a[1])
+    .map(([lugar, n]) => `
+      <div class="barra-item">
+        <div class="barra-label" style="font-size:11px;">${lugar}</div>
+        <div class="barra-wrap"><div class="barra-fill" style="width:${n/max*100}%;background:var(--azul);"></div></div>
+        <div class="barra-num">${n}</div>
+      </div>`).join('');
+}
+
+function renderActividad(eventos) {
+  const recientes = [...eventos]
+    .flatMap(e => (e.historial||[]).map(h => ({...h, evento_id: e.id})))
+    .sort((a,b) => new Date(b.fecha) - new Date(a.fecha))
+    .slice(0, 6);
+  if (recientes.length === 0) return;
+  document.getElementById('actividad-reciente').innerHTML = recientes.map(a => `
+    <div style="display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #f5f6fa;font-size:12px;">
+      <div style="color:var(--gris-muted);white-space:nowrap;">${new Date(a.fecha).toLocaleDateString('es-CL',{day:'numeric',month:'short'})}</div>
+      <div><span style="font-weight:600;color:var(--azul);">${a.evento_id}</span> · ${a.accion}</div>
+    </div>`).join('');
+}
+
+// ── FILTROS ───────────────────────────────────────────────────
+function filtrar(f, el) {
+  filtroActual = f;
+  document.querySelectorAll('.filtro').forEach(b => b.classList.remove('activo'));
+  el.classList.add('activo');
+  renderTabla(getEventos());
+}
+
+// ── MODAL ASIGNAR ─────────────────────────────────────────────
+function abrirAsignar(id) {
+  eventoSeleccionado = id;
+  const e = getEventos().find(ev => ev.id === id);
+  document.getElementById('modal-asignar-body').innerHTML = `
+    <div style="background:var(--azul-claro);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;">
+      <strong>${e.id}</strong> · ${e.subtipo} · ${e.lugar}<br>
+      <span style="color:var(--gris-texto);">${e.descripcion.substring(0,100)}...</span>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Asignar investigación a</label>
+      <select class="form-select" id="asignar-a">
+        ${PREVENCIONISTAS_DEMO.map(p => `<option value="${p.codigo}">${p.nombre} — ${p.planta}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Plazo máximo de investigación</label>
+      <input type="date" class="form-input" id="plazo-inv" min="${new Date().toISOString().split('T')[0]}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Instrucciones adicionales (opcional)</label>
+      <textarea class="form-input" id="instrucciones-inv" rows="2" placeholder="Ej: Focalizar en el análisis del EPP disponible y las condiciones del área..." style="resize:none;"></textarea>
+    </div>
+  `;
+  document.getElementById('modal-asignar').classList.add('open');
+}
+
+function confirmarAsignacion() {
+  const asignadoA = document.getElementById('asignar-a').value;
+  const plazo = document.getElementById('plazo-inv').value;
+  const instrucciones = document.getElementById('instrucciones-inv').value;
+  if (!plazo) { mostrarToast('Debes definir un plazo', false); return; }
+  const prev = PREVENCIONISTAS_DEMO.find(p => p.codigo === asignadoA);
+  const eventos = getEventos();
+  const idx = eventos.findIndex(e => e.id === eventoSeleccionado);
+  eventos[idx].estado = 'investigando';
+  eventos[idx].asignado_a = asignadoA;
+  eventos[idx].plazo_investigacion = plazo;
+  if (!eventos[idx].historial) eventos[idx].historial = [];
+  eventos[idx].historial.push({
+    fecha: new Date().toISOString(),
+    usuario: 'Rafael Acuña',
+    accion: `Investigación asignada a ${prev.nombre}. Plazo: ${new Date(plazo).toLocaleDateString('es-CL')}.${instrucciones ? ' Instrucciones: '+instrucciones : ''}`
+  });
+  saveEventos(eventos);
+  cerrarModal();
+  mostrarToast('✓ Investigación asignada a ' + prev.nombre.split(' ')[0], true);
+  render();
+}
+
+// ── MODAL DETALLE ─────────────────────────────────────────────
+function abrirDetalle(id) {
+  const e = getEventos().find(ev => ev.id === id);
+  document.getElementById('modal-detalle-titulo').textContent = e.id + ' — ' + e.subtipo;
+  document.getElementById('modal-detalle-body').innerHTML = `
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <span class="tipo-badge t-${e.tipo}">${e.subtipo}</span>
+      <span class="estado-badge e-${e.estado}">${estadoLabel(e.estado)}</span>
+      ${e.gravedad==='grave'?'<span class="estado-badge e-grave">🚨 GRAVE</span>':''}
+    </div>
+    <div class="detalle-field"><span class="detalle-key">Fecha y hora</span><span class="detalle-val">${e.fecha} ${e.hora}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Lugar</span><span class="detalle-val">${e.lugar} · ${e.area}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Descripción</span><span class="detalle-val" style="text-align:left;max-width:100%;">${e.descripcion}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Afectado</span><span class="detalle-val">${e.afectado_nombre}</span></div>
+    <div class="detalle-field"><span class="detalle-key">RUT</span><span class="detalle-val">${e.afectado_rut}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Cargo</span><span class="detalle-val">${e.afectado_cargo}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Tipo trabajador</span><span class="detalle-val">${e.afectado_tipo}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Supervisor directo</span><span class="detalle-val">${e.afectado_supervisor}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Parte del cuerpo</span><span class="detalle-val">${e.parte_cuerpo}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Tipo de lesión</span><span class="detalle-val">${e.tipo_lesion}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Agente causante</span><span class="detalle-val">${e.agente}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Atención médica</span><span class="detalle-val">${e.atencion_medica}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Días perdidos</span><span class="detalle-val">${e.dias_perdidos}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Acción inmediata</span><span class="detalle-val" style="text-align:left;">${e.accion_inmediata}</span></div>
+    <div class="detalle-field"><span class="detalle-key">Registrado por</span><span class="detalle-val">${e.prevencionista_nombre}</span></div>
+    ${e.correctivas ? `
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--gris-borde);">
+      <div style="font-size:12px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Medidas correctivas</div>
+      ${e.correctivas.map(c=>`
+        <div style="background:var(--gris-bg);border-radius:8px;padding:10px 12px;margin-bottom:7px;font-size:13px;">
+          <div style="font-weight:600;margin-bottom:3px;">${c.descripcion}</div>
+          <div style="color:var(--gris-texto);">Responsable: ${c.responsable} · Plazo: ${c.plazo} · 
+            <span style="font-weight:700;color:${c.estado==='vencida'?'var(--rojo)':c.estado==='completada'?'var(--verde)':'var(--amarillo)'};">${c.estado}</span>
+          </div>
+        </div>`).join('')}
+    </div>` : ''}
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--gris-borde);">
+      <div style="font-size:12px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Historial de auditoría</div>
+      ${(e.historial||[]).map(h=>`
+        <div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid #f5f6fa;font-size:12px;">
+          <div style="color:var(--gris-muted);white-space:nowrap;min-width:130px;">${new Date(h.fecha).toLocaleString('es-CL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+          <div><strong style="color:var(--azul);">${h.usuario}</strong> · ${h.accion}</div>
+        </div>`).join('')}
+    </div>
+  `;
+  const footer = document.getElementById('modal-detalle-footer');
+  footer.innerHTML = `<button class="btn-secondary" onclick="cerrarModalDetalle()">Cerrar</button>`;
+  if (e.estado === 'registrado') footer.innerHTML += `<button class="btn-primary" onclick="cerrarModalDetalle();abrirAsignar('${e.id}')">Asignar investigación</button>`;
+  if (e.estado === 'correctivas') footer.innerHTML += `<button class="btn-primary" style="background:var(--verde);" onclick="cerrarModalDetalle();abrirAprobar('${e.id}')">Aprobar cierre</button>`;
+  document.getElementById('modal-detalle').classList.add('open');
+}
+
+function abrirAprobar(id) {
+  eventoSeleccionado = id;
+  document.getElementById('obs-cierre').value = '';
+  document.getElementById('modal-aprobar').classList.add('open');
+}
+
+function confirmarCierre() {
+  const obs = document.getElementById('obs-cierre').value.trim();
+  const eventos = getEventos();
+  const idx = eventos.findIndex(e => e.id === eventoSeleccionado);
+  eventos[idx].estado = 'cerrado';
+  eventos[idx].fecha_cierre = new Date().toISOString();
+  eventos[idx].cerrado_por = 'Rafael Acuña';
+  if (!eventos[idx].historial) eventos[idx].historial = [];
+  eventos[idx].historial.push({
+    fecha: new Date().toISOString(),
+    usuario: 'Rafael Acuña',
+    accion: '✓ Investigación aprobada y caso cerrado.' + (obs ? ' Obs: ' + obs : '')
+  });
+  saveEventos(eventos);
+  document.getElementById('modal-aprobar').classList.remove('open');
+  mostrarToast('✓ Caso cerrado exitosamente', true);
+  render();
+}
+
+function cerrarModal() { document.getElementById('modal-asignar').classList.remove('open'); }
+function cerrarModalDetalle() { document.getElementById('modal-detalle').classList.remove('open'); }
+function cerrarModalOverlay(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  }
+}
+
+function cerrarSesion() {
+  localStorage.removeItem('mp_usuario');
+  window.location.href = 'index.html';
+}
+
+function mostrarToast(msg, ok) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (ok ? ' ok' : ok === false ? '' : ' warn') + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+render();
+</script>
+</body>
+</html>
