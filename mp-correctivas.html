@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Más prevención — Correctivas</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#1B2E6E;--azul-claro:#e8ecf8;--naranja:#E87722;--naranja-claro:#fdf0e4;--blanco:#ffffff;--gris-bg:#f2f4f8;--gris-borde:#dde1ec;--gris-texto:#5a6480;--gris-muted:#98a0b8;--negro:#0d1526;--verde:#15803D;--verde-claro:#dcfce7;--rojo:#dc2626;--rojo-claro:#fee2e2;--amarillo:#854D0E;--amarillo-claro:#fef9c3;--morado:#5B21B6;--morado-claro:#ede9fe;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro);min-height:100vh;max-width:560px;margin:0 auto;padding-bottom:40px;}
+.header{background:var(--azul);padding:0 18px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.btn-back{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.header-info{flex:1;}
+.header-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#fff;}
+.header-sub{font-size:11px;color:rgba(255,255,255,0.7);}
+.body{padding:18px 16px;}
+
+.resumen-evento{background:var(--azul);border-radius:14px;padding:14px 16px;margin-bottom:18px;}
+.res-id{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:rgba(255,255,255,0.9);margin-bottom:3px;}
+.res-desc{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5;}
+
+.progreso-global{background:var(--blanco);border-radius:12px;border:1px solid var(--gris-borde);padding:14px 16px;margin-bottom:18px;}
+.prog-titulo{font-size:12px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;}
+.prog-bar{height:8px;background:var(--gris-bg);border-radius:10px;overflow:hidden;margin-bottom:6px;}
+.prog-fill{height:100%;background:var(--verde);border-radius:10px;transition:width 0.5s ease;}
+.prog-texto{font-size:12px;color:var(--gris-texto);font-weight:600;}
+
+.corr-card{background:var(--blanco);border-radius:14px;border:1px solid var(--gris-borde);margin-bottom:14px;overflow:hidden;transition:all 0.2s;}
+.corr-card.completada{border-color:var(--verde);}
+.corr-card.vencida{border-color:var(--rojo);}
+.corr-header{padding:14px 16px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+.corr-check{width:28px;height:28px;border-radius:8px;border:2.5px solid var(--gris-borde);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.2s;}
+.corr-check.ok{background:var(--verde);border-color:var(--verde);color:#fff;font-size:14px;}
+.corr-info{flex:1;}
+.corr-titulo{font-size:14px;font-weight:600;color:var(--negro);margin-bottom:4px;line-height:1.4;}
+.corr-meta{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--gris-muted);}
+.corr-tipo{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;}
+.tipo-inm{background:var(--rojo-claro);color:var(--rojo);}
+.tipo-cp{background:var(--naranja-claro);color:#9A3412;}
+.tipo-lp{background:var(--verde-claro);color:var(--verde);}
+.plazo-ok{color:var(--gris-muted);}
+.plazo-vencido{color:var(--rojo);font-weight:700;}
+.plazo-urgente{color:var(--naranja);font-weight:700;}
+
+.corr-body{padding:0 16px 16px;border-top:1px solid var(--gris-borde);margin-top:0;display:none;}
+.corr-body.open{display:block;padding-top:14px;}
+.fl{font-size:11px;font-weight:700;color:var(--gris-texto);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;display:block;}
+.ft{width:100%;padding:11px 13px;border:1.5px solid var(--gris-borde);border-radius:10px;font-size:14px;font-family:'Barlow',sans-serif;color:var(--negro);background:var(--blanco);resize:none;transition:border 0.15s;}
+.ft:focus{outline:none;border-color:var(--verde);}
+
+/* FOTOS */
+.fotos-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.foto-slot{aspect-ratio:1;border-radius:10px;border:2px dashed var(--gris-borde);background:var(--gris-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:all 0.15s;}
+.foto-slot:active{transform:scale(0.97);}
+.foto-slot.ocupada{border:none;}
+.foto-slot img{width:100%;height:100%;object-fit:cover;border-radius:8px;}
+.foto-delete{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,0.6);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;}
+.foto-icon{font-size:22px;margin-bottom:4px;}
+.foto-txt{font-size:10px;font-weight:600;color:var(--gris-muted);text-align:center;}
+input[type=file]{display:none;}
+
+.btn-marcar{width:100%;padding:14px;border-radius:12px;border:none;background:var(--verde);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;cursor:pointer;margin-top:12px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-marcar:hover{background:#12662f;}
+.btn-marcar.desmarcar{background:var(--gris-borde);color:var(--gris-texto);}
+
+.ya-completada{background:var(--verde-claro);border-radius:10px;padding:10px 12px;margin-top:10px;}
+.ya-comp-titulo{font-size:11px;font-weight:700;color:var(--verde);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;}
+.ya-comp-texto{font-size:13px;color:var(--negro);line-height:1.5;}
+.ya-comp-fotos{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.ya-comp-fotos img{width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;}
+
+.btn-enviar{width:100%;padding:17px;border-radius:14px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;cursor:pointer;transition:all 0.15s;margin-top:6px;}
+.btn-enviar:hover{background:#243d8f;}
+.btn-enviar:disabled{background:var(--gris-borde);color:var(--gris-muted);cursor:not-allowed;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--negro);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:200;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{background:var(--verde);}
+@media(min-width:560px){body{border-left:1px solid var(--gris-borde);border-right:1px solid var(--gris-borde);}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="btn-back" onclick="window.location.href='dashboard-prev.html'">←</button>
+  <div class="header-info">
+    <div class="header-titulo">Medidas correctivas</div>
+    <div class="header-sub" id="header-sub">Cargando...</div>
+  </div>
+</div>
+
+<div class="body">
+  <div class="resumen-evento" id="resumen-ev" style="display:none;">
+    <div class="res-id" id="res-id"></div>
+    <div class="res-desc" id="res-desc"></div>
+  </div>
+
+  <div class="progreso-global">
+    <div class="prog-titulo">Avance de medidas correctivas</div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="prog-texto" id="prog-texto">0 de 0 completadas</div>
+  </div>
+
+  <div id="correctivas-lista"></div>
+
+  <button class="btn-enviar" id="btn-enviar" onclick="enviarARafael()" disabled>
+    Enviar avance a Rafael →
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const usuario = JSON.parse(localStorage.getItem('mp_usuario')||'null');
+if(!usuario) window.location.href='index.html';
+const params = new URLSearchParams(window.location.search);
+const eventoId = params.get('id');
+
+function getEventos(){return JSON.parse(localStorage.getItem('mp_eventos')||'[]');}
+function saveEventos(ev){localStorage.setItem('mp_eventos',JSON.stringify(ev));}
+
+let evento = null;
+let correctivasEstado = {}; // {idx: {completada, nota, fotos:[]}}
+
+function init(){
+  if(!eventoId){mostrarError();return;}
+  const todos = getEventos();
+  evento = todos.find(e=>e.id===eventoId);
+  if(!evento||!evento.correctivas||evento.correctivas.length===0){mostrarError();return;}
+
+  document.getElementById('header-sub').textContent = evento.id + ' · ' + evento.lugar;
+  document.getElementById('res-id').textContent = evento.id + ' — ' + evento.subtipo;
+  document.getElementById('res-desc').textContent = evento.descripcion;
+  document.getElementById('resumen-ev').style.display='block';
+
+  // Inicializar estado desde lo guardado
+  evento.correctivas.forEach((c,i)=>{
+    correctivasEstado[i]={
+      completada: c.estado==='completada',
+      nota: c.nota_cumplimiento||'',
+      fotos: c.fotos_cumplimiento||[]
+    };
+  });
+
+  render();
+}
+
+function render(){
+  const total = evento.correctivas.length;
+  const completadas = Object.values(correctivasEstado).filter(c=>c.completada).length;
+  const pct = total>0 ? Math.round(completadas/total*100) : 0;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-texto').textContent=`${completadas} de ${total} completada${total!==1?'s':''}`;
+  document.getElementById('btn-enviar').disabled = completadas===0;
+
+  const hoy = new Date();
+  document.getElementById('correctivas-lista').innerHTML = evento.correctivas.map((c,i)=>{
+    const est = correctivasEstado[i];
+    const plazo = c.plazo ? new Date(c.plazo) : null;
+    const diasR = plazo ? Math.ceil((plazo-hoy)/(1000*60*60*24)) : null;
+    const vencida = diasR!==null && diasR<0 && !est.completada;
+    const urgente = diasR!==null && diasR>=0 && diasR<=3 && !est.completada;
+    const tipoClass = c.tipo==='inmediata'?'tipo-inm':c.tipo==='corto_plazo'?'tipo-cp':'tipo-lp';
+    const tipoLabel = c.tipo==='inmediata'?'🚨 Inmediata':c.tipo==='corto_plazo'?'⏱ Corto plazo':'📅 Largo plazo';
+
+    return `
+    <div class="corr-card ${est.completada?'completada':vencida?'vencida':''}" id="card-${i}">
+      <div class="corr-header" onclick="toggleCard(${i})">
+        <div class="corr-check ${est.completada?'ok':''}">${est.completada?'✓':''}</div>
+        <div class="corr-info">
+          <div class="corr-titulo">${c.descripcion}</div>
+          <div class="corr-meta">
+            <span class="corr-tipo ${tipoClass}">${tipoLabel}</span>
+            ${plazo?`<span class="${vencida?'plazo-vencido':urgente?'plazo-urgente':'plazo-ok'}">
+              ${vencida?'⚠ Vencida':'Plazo: '+plazo.toLocaleDateString('es-CL')}
+              ${urgente?' ('+diasR+' día'+(diasR!==1?'s':'')+')':''}
+            </span>`:''}
+            <span>👤 ${c.responsable||'Sin asignar'}</span>
+          </div>
+        </div>
+        <div style="font-size:18px;color:var(--gris-muted);margin-left:8px;">${est.completada?'✅':'›'}</div>
+      </div>
+
+      <div class="corr-body" id="body-${i}">
+        ${est.completada && est.nota ? `
+          <div class="ya-completada">
+            <div class="ya-comp-titulo">✓ Completada — evidencia registrada</div>
+            <div class="ya-comp-texto">${est.nota}</div>
+            ${est.fotos.length>0?`<div class="ya-comp-fotos">${est.fotos.map((f,fi)=>`<img src="${f}" onclick="verFoto('${i}',${fi})">`).join('')}</div>`:''}
+          </div>
+          <button class="btn-marcar desmarcar" onclick="desmarcar(${i})">✕ Marcar como pendiente</button>
+        ` : `
+          <div style="margin-bottom:12px;">
+            <label class="fl">¿Qué se hizo? (obligatorio)</label>
+            <textarea class="ft" id="nota-${i}" rows="3" placeholder="Describe brevemente la acción realizada para implementar esta medida..." oninput="syncNota(${i},this.value)">${est.nota}</textarea>
+          </div>
+          <div>
+            <label class="fl">Evidencia fotográfica (opcional)</label>
+            <div class="fotos-wrap" id="fotos-wrap-${i}">
+              ${renderSlotsFotos(i)}
+            </div>
+          </div>
+          <button class="btn-marcar" onclick="marcarCompletada(${i})">✓ Marcar como completada</button>
+        `}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSlotsFotos(idx){
+  const fotos = correctivasEstado[idx].fotos;
+  let html = fotos.map((f,fi)=>`
+    <div class="foto-slot ocupada">
+      <img src="${f}">
+      <div class="foto-delete" onclick="eliminarFoto(${idx},${fi});event.stopPropagation()">✕</div>
+    </div>`).join('');
+  if(fotos.length<3){
+    html+=`<div class="foto-slot" onclick="abrirCamara(${idx})">
+      <div class="foto-icon">📷</div>
+      <div class="foto-txt">Agregar foto</div>
+    </div>`;
+    html+=`<input type="file" id="file-${idx}" accept="image/*" capture="environment" onchange="procesarFoto(${idx},this)">`;
+  }
+  return html;
+}
+
+function toggleCard(i){
+  const body=document.getElementById('body-'+i);
+  body.classList.toggle('open');
+}
+
+function syncNota(i,v){correctivasEstado[i].nota=v;}
+
+function abrirCamara(i){document.getElementById('file-'+i)?.click();}
+
+function procesarFoto(idx,input){
+  const file=input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    if(correctivasEstado[idx].fotos.length<3){
+      correctivasEstado[idx].fotos.push(e.target.result);
+      document.getElementById('fotos-wrap-'+idx).innerHTML=renderSlotsFotos(idx);
+    }
+  };
+  reader.readAsDataURL(file);
+  input.value='';
+}
+
+function eliminarFoto(idx,fi){
+  correctivasEstado[idx].fotos.splice(fi,1);
+  document.getElementById('fotos-wrap-'+idx).innerHTML=renderSlotsFotos(idx);
+}
+
+function marcarCompletada(i){
+  const nota=document.getElementById('nota-'+i)?.value.trim();
+  if(!nota){mostrarToast('Describe qué se hizo para completar la medida',false);return;}
+  correctivasEstado[i].completada=true;
+  correctivasEstado[i].nota=nota;
+  if(navigator.vibrate)navigator.vibrate([30,20,30]);
+  render();
+  mostrarToast('✓ Medida marcada como completada',true);
+}
+
+function desmarcar(i){
+  correctivasEstado[i].completada=false;
+  render();
+}
+
+function verFoto(idx,fi){
+  const src=correctivasEstado[idx].fotos[fi];
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:300;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+  overlay.innerHTML=`<img src="${src}" style="max-width:95vw;max-height:90vh;border-radius:10px;">`;
+  overlay.onclick=()=>document.body.removeChild(overlay);
+  document.body.appendChild(overlay);
+}
+
+function enviarARafael(){
+  const completadas=Object.values(correctivasEstado).filter(c=>c.completada).length;
+  const total=evento.correctivas.length;
+  const todos=getEventos();
+  const idx=todos.findIndex(e=>e.id===eventoId);
+
+  // Actualizar correctivas con evidencia
+  todos[idx].correctivas=evento.correctivas.map((c,i)=>({
+    ...c,
+    estado: correctivasEstado[i].completada ? 'completada' : c.estado,
+    nota_cumplimiento: correctivasEstado[i].nota,
+    fotos_cumplimiento: correctivasEstado[i].fotos,
+    fecha_completada: correctivasEstado[i].completada ? new Date().toISOString() : null
+  }));
+
+  if(!todos[idx].historial) todos[idx].historial=[];
+  todos[idx].historial.push({
+    fecha: new Date().toISOString(),
+    usuario: usuario.nombre.split(' ').slice(0,2).join(' '),
+    accion: `Avance de correctivas registrado: ${completadas} de ${total} completada${total!==1?'s':''}. ${completadas===total?'Todas completadas — listo para aprobación de Rafael.':'Pendiente completar las restantes.'}`
+  });
+  saveEventos(todos);
+
+  document.querySelector('.body').innerHTML=`
+    <div style="text-align:center;padding:48px 20px;">
+      <div style="font-size:64px;margin-bottom:16px;">${completadas===total?'🎉':'📋'}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--negro);margin-bottom:10px;">
+        ${completadas===total?'¡Todas las medidas completadas!':'Avance registrado'}
+      </div>
+      <div style="font-size:14px;color:var(--gris-texto);line-height:1.7;margin-bottom:24px;">
+        ${completadas===total
+          ? 'Rafael recibirá la notificación para revisar y aprobar el cierre del caso <strong>'+eventoId+'</strong>.'
+          : completadas+' de '+total+' medidas completadas. Rafael puede ver tu avance en el evento <strong>'+eventoId+'</strong>.'}
+      </div>
+      <button onclick="window.location.href='dashboard-prev.html'" style="width:100%;padding:16px;border-radius:14px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;cursor:pointer;margin-bottom:10px;">Volver al inicio</button>
+      <button onclick="window.location.href='mp-mis-registros.html'" style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--gris-borde);background:var(--blanco);color:var(--gris-texto);font-family:'Barlow',sans-serif;font-weight:600;font-size:15px;cursor:pointer;">Ver mis registros</button>
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+function mostrarError(){
+  document.querySelector('.body').innerHTML='<div style="padding:40px;text-align:center;color:#5a6480;font-family:Barlow,sans-serif;"><div style="font-size:40px;margin-bottom:12px;">⚠️</div><div style="font-size:16px;font-weight:600;">Evento no encontrado o sin correctivas</div><br><a href="dashboard-prev.html" style="color:#1B2E6E;font-weight:700;">Volver al inicio</a></div>';
+}
+
+function mostrarToast(msg,ok){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(ok?' ok':'')+' show';
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+init();
+</script>
+</body>
+</html>
