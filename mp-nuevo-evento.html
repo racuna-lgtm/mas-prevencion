@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Más prevención — Nuevo evento</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul:#1B2E6E; --azul-mid:#243d8f; --azul-claro:#e8ecf8;
+  --naranja:#E87722; --naranja-claro:#fdf0e4;
+  --blanco:#ffffff; --gris-bg:#f2f4f8; --gris-borde:#dde1ec;
+  --gris-texto:#5a6480; --gris-muted:#98a0b8; --negro:#0d1526;
+  --verde:#15803D; --verde-claro:#dcfce7;
+  --rojo:#dc2626; --rojo-claro:#fee2e2;
+  --amarillo:#854D0E; --amarillo-claro:#fef9c3;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro);min-height:100vh;max-width:560px;margin:0 auto;padding-bottom:40px;}
+
+.header{background:var(--azul);padding:0 18px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.btn-back{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.header-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#fff;flex:1;}
+.header-paso{font-size:12px;color:rgba(255,255,255,0.7);}
+
+/* PROGRESO */
+.progreso-wrap{background:var(--azul);padding:0 18px 14px;}
+.progreso-bar{height:4px;background:rgba(255,255,255,0.2);border-radius:10px;overflow:hidden;}
+.progreso-fill{height:100%;background:var(--naranja);border-radius:10px;transition:width 0.4s ease;}
+.pasos-labels{display:flex;justify-content:space-between;margin-top:6px;}
+.paso-label{font-size:10px;color:rgba(255,255,255,0.5);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
+.paso-label.activo{color:rgba(255,255,255,0.9);}
+
+.cuerpo{padding:18px 16px;}
+
+/* SECCIONES */
+.seccion{background:var(--blanco);border-radius:14px;border:1px solid var(--gris-borde);margin-bottom:14px;overflow:hidden;}
+.sec-header{padding:13px 16px;background:var(--azul-claro);border-bottom:1px solid var(--gris-borde);display:flex;align-items:center;gap:8px;}
+.sec-icon{font-size:18px;}
+.sec-titulo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;color:var(--azul);}
+.sec-body{padding:14px 16px;}
+
+/* FORM */
+.fg{margin-bottom:14px;}
+.fg:last-child{margin-bottom:0;}
+.fl{font-size:11px;font-weight:700;color:var(--gris-texto);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;display:block;}
+.fi,.fs,.ft{width:100%;padding:11px 13px;border:1.5px solid var(--gris-borde);border-radius:10px;font-size:14px;font-family:'Barlow',sans-serif;color:var(--negro);background:var(--blanco);transition:border 0.15s;}
+.fi:focus,.fs:focus,.ft:focus{outline:none;border-color:var(--naranja);}
+.ft{resize:none;}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* OPCIONES TIPO */
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tipo-opt{padding:12px 10px;border-radius:10px;border:2px solid var(--gris-borde);background:var(--blanco);cursor:pointer;text-align:center;transition:all 0.15s;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
+.tipo-opt:active{transform:scale(0.97);}
+.tipo-opt.sel{border-color:var(--naranja);background:var(--naranja-claro);}
+.tipo-opt.sel-azul{border-color:var(--azul);background:var(--azul-claro);}
+.tipo-opt.sel-rojo{border-color:var(--rojo);background:var(--rojo-claro);}
+.tipo-icon{font-size:24px;}
+.tipo-label{font-size:12px;font-weight:700;color:var(--negro);}
+.tipo-sub{font-size:10px;color:var(--gris-muted);}
+.tipo-opt.sel .tipo-label,.tipo-opt.sel-azul .tipo-label,.tipo-opt.sel-rojo .tipo-label{color:var(--negro);}
+
+/* LUGAR */
+.lugar-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.lugar-opt{padding:10px 8px;border-radius:9px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:var(--gris-texto);transition:all 0.15s;min-height:44px;display:flex;align-items:center;justify-content:center;}
+.lugar-opt.sel{border-color:var(--azul);background:var(--azul-claro);color:var(--azul);}
+
+/* GRAVEDAD */
+.gravedad-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.grav-opt{padding:8px 4px;border-radius:9px;border:1.5px solid var(--gris-borde);cursor:pointer;text-align:center;font-size:11px;font-weight:700;transition:all 0.15s;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;}
+.grav-icon{font-size:18px;}
+.grav-opt.sel-verde{border-color:var(--verde);background:var(--verde-claro);color:var(--verde);}
+.grav-opt.sel-amarillo{border-color:#D97706;background:#FEF3C7;color:#92400E;}
+.grav-opt.sel-naranja{border-color:var(--naranja);background:var(--naranja-claro);color:#9A3412;}
+.grav-opt.sel-rojo{border-color:var(--rojo);background:var(--rojo-claro);color:var(--rojo);}
+
+/* VOZ */
+.mic-btn{width:100%;padding:14px;border-radius:12px;border:2px dashed var(--gris-borde);background:var(--blanco);cursor:pointer;display:flex;align-items:center;gap:12px;transition:all 0.15s;font-family:'Barlow',sans-serif;}
+.mic-btn.grabando{border-color:var(--naranja);background:var(--naranja-claro);}
+.mic-icon{font-size:24px;flex-shrink:0;}
+.mic-texto{font-size:13px;font-weight:600;color:var(--gris-texto);}
+.mic-btn.grabando .mic-texto{color:var(--naranja);}
+.transcripcion-box{display:none;background:var(--verde-claro);border:1.5px solid var(--verde);border-radius:10px;padding:12px;margin-top:8px;}
+.transcripcion-box.visible{display:block;}
+.trans-label{font-size:11px;font-weight:700;color:var(--verde);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em;}
+.trans-texto{width:100%;border:none;background:transparent;font-size:14px;font-family:'Barlow',sans-serif;color:var(--negro);resize:none;outline:none;}
+.trans-acciones{display:flex;gap:8px;margin-top:8px;}
+.btn-usar{flex:1;padding:9px;border-radius:8px;border:none;background:var(--verde);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;cursor:pointer;}
+.btn-rehacer{padding:9px 12px;border-radius:8px;border:1.5px solid var(--gris-borde);background:var(--blanco);color:var(--gris-texto);font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;cursor:pointer;}
+
+/* BOTÓN GUARDAR */
+.btn-guardar{width:100%;padding:17px;border-radius:14px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;cursor:pointer;transition:all 0.15s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-guardar:hover{background:var(--azul-mid);}
+.btn-guardar:disabled{background:var(--gris-borde);color:var(--gris-muted);cursor:not-allowed;}
+.btn-guardar.naranja{background:var(--naranja);}
+
+/* CAMPOS CONDICIONALES */
+.condicional{display:none;}
+.condicional.visible{display:block;}
+
+.aviso{background:var(--rojo-claro);border:1px solid #fecaca;border-radius:10px;padding:12px 14px;display:none;margin-bottom:12px;}
+.aviso.visible{display:flex;gap:10px;align-items:flex-start;}
+.aviso-icon{font-size:20px;flex-shrink:0;}
+.aviso-texto{font-size:13px;font-weight:600;color:var(--rojo);line-height:1.5;}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--negro);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all 0.3s;z-index:200;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.ok{background:var(--verde);}
+
+@media(min-width:560px){body{border-left:1px solid var(--gris-borde);border-right:1px solid var(--gris-borde);}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="btn-back" onclick="history.back()">←</button>
+  <div class="header-titulo">Registrar nuevo evento</div>
+  <div class="header-paso" id="header-paso">Paso 1 de 3</div>
+</div>
+
+<div class="progreso-wrap">
+  <div class="progreso-bar"><div class="progreso-fill" id="prog-fill" style="width:33%"></div></div>
+  <div class="pasos-labels">
+    <span class="paso-label activo" id="pl1">Tipo y lugar</span>
+    <span class="paso-label" id="pl2">Descripción</span>
+    <span class="paso-label" id="pl3">Afectado</span>
+  </div>
+</div>
+
+<div class="cuerpo">
+
+<!-- PASO 1 -->
+<div id="paso1">
+
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">⚡</span><span class="sec-titulo">Tipo de evento</span></div>
+    <div class="sec-body">
+      <div class="tipo-grid">
+        <div class="tipo-opt" id="t-accidente" onclick="selTipo('accidente',this)">
+          <span class="tipo-icon">⚡</span>
+          <span class="tipo-label">Accidente</span>
+          <span class="tipo-sub">Con lesión o daño</span>
+        </div>
+        <div class="tipo-opt" id="t-incidente" onclick="selTipo('incidente',this)">
+          <span class="tipo-icon">⚠️</span>
+          <span class="tipo-label">Incidente</span>
+          <span class="tipo-sub">Sin lesión, con potencial</span>
+        </div>
+        <div class="tipo-opt" id="t-observacion" onclick="selTipo('observacion',this)">
+          <span class="tipo-icon">👁️</span>
+          <span class="tipo-label">Observación</span>
+          <span class="tipo-sub">Condición de riesgo</span>
+        </div>
+        <div class="tipo-opt" id="t-ambiental" onclick="selTipo('ambiental',this)">
+          <span class="tipo-icon">🌿</span>
+          <span class="tipo-label">Medioambiental</span>
+          <span class="tipo-sub">Derrame o emisión</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBTIPO (condicional) -->
+  <div class="seccion condicional" id="sec-subtipo">
+    <div class="sec-header"><span class="sec-icon">📋</span><span class="sec-titulo">Subtipo</span></div>
+    <div class="sec-body">
+      <div class="fg">
+        <select class="fs" id="subtipo">
+          <option value="">Seleccionar subtipo...</option>
+        </select>
+      </div>
+      <!-- Gravedad solo para accidentes -->
+      <div id="sec-gravedad" style="display:none;">
+        <label class="fl">Gravedad</label>
+        <div class="gravedad-grid">
+          <div class="grav-opt" onclick="selGravedad('sin_lesion',this,'sel-verde')"><div class="grav-icon">✅</div><div>Sin lesión</div></div>
+          <div class="grav-opt" onclick="selGravedad('leve',this,'sel-amarillo')"><div class="grav-icon">🩹</div><div>Leve</div></div>
+          <div class="grav-opt" onclick="selGravedad('grave',this,'sel-naranja')"><div class="grav-icon">🚑</div><div>Grave</div></div>
+          <div class="grav-opt" onclick="selGravedad('fatal',this,'sel-rojo')"><div class="grav-icon">🚨</div><div>Fatal</div></div>
+        </div>
+        <div class="aviso" id="aviso-grave">
+          <span class="aviso-icon">🚨</span>
+          <div class="aviso-texto">Evento grave o fatal: Rafael será notificado inmediatamente. Recuerda que existe un plazo legal de 24 horas para notificación a la SEREMI.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LUGAR -->
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">📍</span><span class="sec-titulo">Lugar del evento</span></div>
+    <div class="sec-body">
+      <div class="fg">
+        <label class="fl">Planta Socoval</label>
+        <div class="lugar-grid" id="plantas-grid">
+          <div class="lugar-opt" onclick="selLugar('Quillota',this)">Quillota</div>
+          <div class="lugar-opt" onclick="selLugar('Quilicura',this)">Quilicura</div>
+          <div class="lugar-opt" onclick="selLugar('Maipú',this)">Maipú</div>
+          <div class="lugar-opt" onclick="selLugar('Cerrillos',this)">Cerrillos</div>
+          <div class="lugar-opt" onclick="selLugar('Oficina Central',this)">Oficina Central</div>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Proyecto externo</label>
+        <div class="lugar-grid">
+          <div class="lugar-opt" onclick="selLugar('Goodyear Moldes',this)">Goodyear Moldes</div>
+          <div class="lugar-opt" onclick="selLugar('Carozzi Lontué',this)">Carozzi Lontué</div>
+          <div class="lugar-opt" onclick="selLugar('Sacyr Antofagasta',this)">Sacyr Antofagasta</div>
+          <div class="lugar-opt" onclick="selLugarOtro(this)">Otro proyecto...</div>
+        </div>
+        <input class="fi condicional" id="lugar-otro-input" placeholder="Nombre del proyecto..." style="margin-top:8px;" oninput="setLugarOtro(this.value)">
+      </div>
+      <div class="fg">
+        <label class="fl">Área específica</label>
+        <input class="fi" id="area" placeholder="Ej: Taller de soldadura, Bodega, Patio...">
+      </div>
+    </div>
+  </div>
+
+  <!-- FECHA Y HORA -->
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">🕐</span><span class="sec-titulo">Fecha y hora del evento</span></div>
+    <div class="sec-body">
+      <div class="fg-row">
+        <div class="fg">
+          <label class="fl">Fecha</label>
+          <input type="date" class="fi" id="fecha-evento">
+        </div>
+        <div class="fg">
+          <label class="fl">Hora</label>
+          <input type="time" class="fi" id="hora-evento">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Turno</label>
+        <select class="fs" id="turno">
+          <option value="">Seleccionar...</option>
+          <option>Turno mañana (06:00–14:00)</option>
+          <option>Turno tarde (14:00–22:00)</option>
+          <option>Turno noche (22:00–06:00)</option>
+          <option>Jornada diurna (08:00–18:00)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-guardar naranja" onclick="irPaso2()" id="btn-p1">
+    Continuar →
+  </button>
+</div>
+
+<!-- PASO 2 -->
+<div id="paso2" style="display:none;">
+
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">🎙️</span><span class="sec-titulo">Descripción del evento</span></div>
+    <div class="sec-body">
+      <div class="fg">
+        <label class="fl">Registra por voz o escribe</label>
+        <div class="mic-btn" id="mic-desc-btn" onclick="toggleMic()">
+          <span class="mic-icon" id="mic-icon">🎙️</span>
+          <div>
+            <div class="mic-texto" id="mic-texto">Toca para describir el evento por voz</div>
+            <div style="font-size:11px;color:var(--gris-muted);margin-top:2px;">Cuéntalo con tus palabras, la app clasifica automáticamente</div>
+          </div>
+        </div>
+        <div class="transcripcion-box" id="trans-box">
+          <div class="trans-label">Esto escuché — ¿está bien?</div>
+          <textarea class="trans-texto" id="trans-texto" rows="3"></textarea>
+          <div class="trans-acciones">
+            <button class="btn-usar" onclick="usarTranscripcion()">✓ Usar esta descripción</button>
+            <button class="btn-rehacer" onclick="rehacerVoz()">Repetir</button>
+          </div>
+        </div>
+        <textarea class="ft" id="descripcion" rows="4" placeholder="O escribe aquí la descripción del evento..." style="margin-top:8px;"></textarea>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Acción inmediata tomada</label>
+        <textarea class="ft" id="accion-inmediata" rows="2" placeholder="¿Qué se hizo en el momento para controlar el daño?"></textarea>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Agente causante</label>
+        <select class="fs" id="agente">
+          <option value="">Seleccionar...</option>
+          <option>Herramienta manual</option>
+          <option>Maquinaria / equipo</option>
+          <option>Vehículo</option>
+          <option>Material / carga</option>
+          <option>Caída de altura</option>
+          <option>Caída al mismo nivel</option>
+          <option>Esfuerzo / sobrecarga</option>
+          <option>Sustancia química</option>
+          <option>Electricidad</option>
+          <option>Fuego / explosión</option>
+          <option>Otro</option>
+        </select>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Condiciones del entorno</label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
+            <input type="checkbox" value="Iluminación deficiente"> Ilum. deficiente
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
+            <input type="checkbox" value="Piso mojado / resbaloso"> Piso mojado
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
+            <input type="checkbox" value="Ruido excesivo"> Ruido excesivo
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
+            <input type="checkbox" value="Calor extremo"> Calor extremo
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
+            <input type="checkbox" value="Sin EPP adecuado"> Sin EPP adecuado
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--gris-texto);cursor:pointer;background:var(--gris-bg);padding:5px 10px;border-radius:20px;border:1.5px solid var(--gris-borde);">
+            <input type="checkbox" value="Área no señalizada"> Sin señalética
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;">
+    <button class="btn-guardar" style="background:var(--gris-borde);color:var(--gris-texto);flex:0 0 auto;width:auto;padding:17px 20px;" onclick="irPaso1()">← Atrás</button>
+    <button class="btn-guardar naranja" onclick="irPaso3()" style="flex:1;">Continuar →</button>
+  </div>
+</div>
+
+<!-- PASO 3 -->
+<div id="paso3" style="display:none;">
+
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">👷</span><span class="sec-titulo">Datos del afectado</span></div>
+    <div class="sec-body">
+      <div class="fg">
+        <label class="fl">Tipo de trabajador</label>
+        <select class="fs" id="tipo-trabajador" onchange="mostrarCamposAfectado(this.value)">
+          <option value="">Seleccionar...</option>
+          <option value="socoval">Trabajador Socoval</option>
+          <option value="contratista">Contratista (empresa externa)</option>
+          <option value="na">Sin afectados (incidente sin lesionados)</option>
+        </select>
+      </div>
+
+      <div id="campos-afectado" class="condicional">
+        <div class="fg">
+          <label class="fl">Nombre completo</label>
+          <input class="fi" id="afectado-nombre" placeholder="Nombre y apellidos">
+        </div>
+        <div class="fg-row">
+          <div class="fg">
+            <label class="fl">RUT</label>
+            <input class="fi" id="afectado-rut" placeholder="12345678-9" maxlength="12">
+          </div>
+          <div class="fg">
+            <label class="fl">Antigüedad en cargo</label>
+            <select class="fs" id="antiguedad">
+              <option value="">Seleccionar...</option>
+              <option>Menos de 1 mes</option>
+              <option>1–6 meses</option>
+              <option>6–12 meses</option>
+              <option>Más de 1 año</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">Cargo / función</label>
+          <input class="fi" id="afectado-cargo" placeholder="Ej: Operario soldador, Electricista...">
+        </div>
+        <div class="fg">
+          <label class="fl">Supervisor / jefe directo</label>
+          <input class="fi" id="afectado-supervisor" placeholder="Nombre del supervisor directo">
+        </div>
+        <div id="campo-empresa-contratista" style="display:none;">
+          <div class="fg">
+            <label class="fl">Empresa contratista</label>
+            <input class="fi" id="empresa-contratista" placeholder="Nombre de la empresa contratista">
+          </div>
+        </div>
+      </div>
+
+      <!-- Solo para accidentes -->
+      <div id="campos-lesion" style="display:none;">
+        <div class="fg">
+          <label class="fl">Parte del cuerpo afectada</label>
+          <select class="fs" id="parte-cuerpo">
+            <option value="">Seleccionar...</option>
+            <option>Cabeza / cuello</option>
+            <option>Tronco / espalda</option>
+            <option>Mano derecha</option>
+            <option>Mano izquierda</option>
+            <option>Brazo / hombro</option>
+            <option>Pierna derecha</option>
+            <option>Pierna izquierda</option>
+            <option>Pie</option>
+            <option>Múltiple</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Tipo de lesión</label>
+          <select class="fs" id="tipo-lesion">
+            <option value="">Seleccionar...</option>
+            <option>Corte / laceración</option>
+            <option>Contusión / golpe</option>
+            <option>Fractura</option>
+            <option>Esguince / luxación</option>
+            <option>Quemadura</option>
+            <option>Intoxicación</option>
+            <option>Aplastamiento</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="fg-row">
+          <div class="fg">
+            <label class="fl">Atención médica</label>
+            <select class="fs" id="atencion-medica">
+              <option value="">Seleccionar...</option>
+              <option>Solo primeros auxilios</option>
+              <option>ACHS / mutualidad</option>
+              <option>Hospital / urgencia</option>
+              <option>Sin atención</option>
+              <option>Pendiente evaluación</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="fl">Días perdidos estimados</label>
+            <select class="fs" id="dias-perdidos">
+              <option value="">Seleccionar...</option>
+              <option>0 días</option>
+              <option>1–3 días</option>
+              <option>4–7 días</option>
+              <option>Más de 7 días</option>
+              <option>Pendiente evaluación</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-bottom:14px;">
+    <button class="btn-guardar" style="background:var(--gris-borde);color:var(--gris-texto);flex:0 0 auto;width:auto;padding:17px 20px;" onclick="irPaso2()">← Atrás</button>
+    <button class="btn-guardar" id="btn-guardar-final" onclick="guardarEvento()" style="flex:1;">
+      ✓ Guardar evento
+    </button>
+  </div>
+</div>
+
+</div><!-- /cuerpo -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const usuario = JSON.parse(localStorage.getItem('mp_usuario') || 'null');
+if (!usuario) window.location.href = 'index.html';
+
+// Defaults fecha/hora
+const ahora = new Date();
+document.getElementById('fecha-evento').value = ahora.toISOString().split('T')[0];
+document.getElementById('hora-evento').value = ahora.toTimeString().slice(0,5);
+document.getElementById('fecha-evento').max = ahora.toISOString().split('T')[0];
+
+// ── ESTADO ────────────────────────────────────────────────────
+let estado = { tipo:'', subtipo:'', gravedad:'', lugar:'', area:'', fecha:'', hora:'', turno:'', descripcion:'', accionInmediata:'', agente:'', condiciones:[], tipoTrabajador:'', afectadoNombre:'', afectadoRut:'', afectadoCargo:'', afectadoSupervisor:'', antiguedad:'', empresaContratista:'', parteCuerpo:'', tipoLesion:'', atencionMedica:'', diasPerdidos:'' };
+
+const SUBTIPOS = {
+  accidente: ['Accidente de trabajo','Accidente de trayecto — ida al trabajo','Accidente de trayecto — vuelta del trabajo','Enfermedad profesional'],
+  incidente: ['Casi accidente (near miss)','Condición insegura detectada','Acto inseguro observado','Falla de EPP o equipo','Incidente con daño a propiedad'],
+  observacion: ['Buena práctica observada','Riesgo potencial sin consecuencia','Reporte voluntario del trabajador'],
+  ambiental: ['Derrame contenido','Derrame con impacto','Emisión de gases','Generación no controlada de residuos','Casi derrame']
+};
+
+// ── TIPO ──────────────────────────────────────────────────────
+function selTipo(tipo, el) {
+  estado.tipo = tipo;
+  document.querySelectorAll('.tipo-opt').forEach(o => o.className = 'tipo-opt');
+  el.classList.add(tipo === 'accidente' ? 'sel-rojo' : tipo === 'incidente' ? 'sel' : tipo === 'observacion' ? 'sel-azul' : 'sel-azul');
+  // Subtipo
+  const sel = document.getElementById('subtipo');
+  sel.innerHTML = '<option value="">Seleccionar subtipo...</option>' + SUBTIPOS[tipo].map(s => `<option>${s}</option>`).join('');
+  document.getElementById('sec-subtipo').classList.add('visible');
+  document.getElementById('sec-gravedad').style.display = tipo === 'accidente' ? 'block' : 'none';
+  estado.subtipo = ''; estado.gravedad = '';
+}
+
+function selGravedad(g, el, cls) {
+  estado.gravedad = g;
+  document.querySelectorAll('.grav-opt').forEach(o => o.className = 'grav-opt');
+  el.classList.add(cls);
+  const aviso = document.getElementById('aviso-grave');
+  aviso.classList.toggle('visible', g === 'grave' || g === 'fatal');
+}
+
+// ── LUGAR ─────────────────────────────────────────────────────
+function selLugar(lugar, el) {
+  estado.lugar = lugar;
+  document.querySelectorAll('.lugar-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('lugar-otro-input').classList.remove('visible');
+}
+function selLugarOtro(el) {
+  document.querySelectorAll('.lugar-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('lugar-otro-input').classList.add('visible');
+  document.getElementById('lugar-otro-input').focus();
+  estado.lugar = '';
+}
+function setLugarOtro(v) { estado.lugar = v; }
+
+// ── PASOS ─────────────────────────────────────────────────────
+function actualizarProgreso(paso) {
+  document.getElementById('header-paso').textContent = `Paso ${paso} de 3`;
+  document.getElementById('prog-fill').style.width = (paso/3*100) + '%';
+  ['pl1','pl2','pl3'].forEach((id,i) => document.getElementById(id).classList.toggle('activo', i+1 === paso));
+}
+
+function irPaso2() {
+  if (!estado.tipo) { mostrarToast('Selecciona el tipo de evento', false); return; }
+  if (!estado.lugar) { mostrarToast('Selecciona el lugar del evento', false); return; }
+  estado.area = document.getElementById('area').value.trim();
+  estado.fecha = document.getElementById('fecha-evento').value;
+  estado.hora = document.getElementById('hora-evento').value;
+  estado.turno = document.getElementById('turno').value;
+  estado.subtipo = document.getElementById('subtipo').value;
+  document.getElementById('paso1').style.display = 'none';
+  document.getElementById('paso2').style.display = 'block';
+  actualizarProgreso(2);
+  window.scrollTo(0,0);
+}
+
+function irPaso1() {
+  document.getElementById('paso2').style.display = 'none';
+  document.getElementById('paso1').style.display = 'block';
+  actualizarProgreso(1);
+  window.scrollTo(0,0);
+}
+
+function irPaso3() {
+  const desc = document.getElementById('descripcion').value.trim();
+  if (!desc) { mostrarToast('Escribe o dicta la descripción del evento', false); return; }
+  estado.descripcion = desc;
+  estado.accionInmediata = document.getElementById('accion-inmediata').value.trim();
+  estado.agente = document.getElementById('agente').value;
+  estado.condiciones = [...document.querySelectorAll('.sec-body input[type=checkbox]:checked')].map(c => c.value);
+  // Mostrar campos lesión si es accidente
+  document.getElementById('campos-lesion').style.display = estado.tipo === 'accidente' ? 'block' : 'none';
+  document.getElementById('paso2').style.display = 'none';
+  document.getElementById('paso3').style.display = 'block';
+  actualizarProgreso(3);
+  window.scrollTo(0,0);
+}
+
+function irPaso2desde3() {
+  document.getElementById('paso3').style.display = 'none';
+  document.getElementById('paso2').style.display = 'block';
+  actualizarProgreso(2);
+  window.scrollTo(0,0);
+}
+
+function mostrarCamposAfectado(v) {
+  estado.tipoTrabajador = v;
+  const campos = document.getElementById('campos-afectado');
+  const empresa = document.getElementById('campo-empresa-contratista');
+  campos.classList.toggle('visible', v === 'socoval' || v === 'contratista');
+  empresa.style.display = v === 'contratista' ? 'block' : 'none';
+}
+
+// ── VOZ ───────────────────────────────────────────────────────
+let recognition = null, grabando = false, textoVoz = '';
+const soportaVoz = ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+
+function toggleMic() {
+  if (!soportaVoz) { mostrarToast('Abre en Chrome para usar el micrófono', false); return; }
+  if (grabando) detenerMic(); else iniciarMic();
+}
+
+function iniciarMic() {
+  grabando = true; textoVoz = '';
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'es-CL'; recognition.continuous = false; recognition.interimResults = true;
+  let acumulado = '';
+  document.getElementById('mic-desc-btn').classList.add('grabando');
+  document.getElementById('mic-icon').textContent = '⏹️';
+  document.getElementById('mic-texto').textContent = 'Escuchando... toca para detener';
+  recognition.onresult = e => {
+    let interim = '';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) acumulado += e.results[i][0].transcript + ' ';
+      else interim = e.results[i][0].transcript;
+    }
+    textoVoz = (acumulado + interim).trim();
+  };
+  recognition.onend = () => {
+    grabando = false;
+    document.getElementById('mic-desc-btn').classList.remove('grabando');
+    document.getElementById('mic-icon').textContent = '🎙️';
+    document.getElementById('mic-texto').textContent = 'Toca para describir el evento por voz';
+    if (textoVoz) {
+      document.getElementById('trans-texto').value = textoVoz;
+      document.getElementById('trans-box').classList.add('visible');
+    }
+  };
+  recognition.onerror = () => {
+    grabando = false;
+    document.getElementById('mic-desc-btn').classList.remove('grabando');
+    document.getElementById('mic-icon').textContent = '🎙️';
+    document.getElementById('mic-texto').textContent = 'Toca para describir el evento por voz';
+  };
+  recognition.start();
+}
+function detenerMic() { grabando = false; if(recognition){try{recognition.stop();}catch(e){}} }
+function usarTranscripcion() {
+  document.getElementById('descripcion').value = document.getElementById('trans-texto').value;
+  document.getElementById('trans-box').classList.remove('visible');
+  mostrarToast('✓ Descripción guardada', true);
+}
+function rehacerVoz() { document.getElementById('trans-box').classList.remove('visible'); textoVoz = ''; }
+
+// ── GUARDAR ───────────────────────────────────────────────────
+function guardarEvento() {
+  const tipoTrab = document.getElementById('tipo-trabajador').value;
+  if (!tipoTrab) { mostrarToast('Indica el tipo de trabajador', false); return; }
+
+  // Leer campos paso 3
+  if (tipoTrab !== 'na') {
+    estado.afectadoNombre = document.getElementById('afectado-nombre').value.trim() || 'Sin nombre registrado';
+    estado.afectadoRut = document.getElementById('afectado-rut').value.trim();
+    estado.afectadoCargo = document.getElementById('afectado-cargo').value.trim();
+    estado.afectadoSupervisor = document.getElementById('afectado-supervisor').value.trim();
+    estado.antiguedad = document.getElementById('antiguedad').value;
+    if (tipoTrab === 'contratista') estado.empresaContratista = document.getElementById('empresa-contratista').value.trim();
+  } else {
+    estado.afectadoNombre = 'Sin afectados';
+    estado.afectadoRut = '-'; estado.afectadoCargo = '-'; estado.afectadoSupervisor = '-';
+  }
+  if (estado.tipo === 'accidente' && tipoTrab !== 'na') {
+    estado.parteCuerpo = document.getElementById('parte-cuerpo').value;
+    estado.tipoLesion = document.getElementById('tipo-lesion').value;
+    estado.atencionMedica = document.getElementById('atencion-medica').value;
+    estado.diasPerdidos = document.getElementById('dias-perdidos').value;
+  }
+
+  // Generar ID
+  const eventos = JSON.parse(localStorage.getItem('mp_eventos') || '[]');
+  const num = eventos.length + 1;
+  const id = 'EV-' + String(num).padStart(3,'0');
+
+  const evento = {
+    id, num,
+    fecha: estado.fecha || new Date().toISOString().split('T')[0],
+    hora: estado.hora || new Date().toTimeString().slice(0,5),
+    turno: estado.turno,
+    tipo: estado.tipo,
+    subtipo: estado.subtipo || estado.tipo,
+    gravedad: estado.gravedad || 'sin_lesion',
+    descripcion: estado.descripcion,
+    lugar_tipo: ['Quillota','Quilicura','Maipú','Cerrillos','Oficina Central'].includes(estado.lugar) ? 'planta' : 'proyecto',
+    lugar: estado.lugar,
+    area: estado.area || 'Sin especificar',
+    afectado_nombre: estado.afectadoNombre,
+    afectado_rut: estado.afectadoRut,
+    afectado_cargo: estado.afectadoCargo,
+    afectado_supervisor: estado.afectadoSupervisor,
+    afectado_tipo: estado.tipoTrabajador === 'contratista' ? 'Contratista — ' + estado.empresaContratista : 'Trabajador Socoval',
+    antiguedad: estado.antiguedad,
+    parte_cuerpo: estado.parteCuerpo || '-',
+    tipo_lesion: estado.tipoLesion || '-',
+    agente: estado.agente || 'Sin especificar',
+    condiciones: estado.condiciones,
+    atencion_medica: estado.atencionMedica || '-',
+    dias_perdidos: estado.diasPerdidos || '-',
+    accion_inmediata: estado.accionInmediata || 'No registrada',
+    prevencionista_codigo: usuario.codigo,
+    prevencionista_nombre: usuario.nombre,
+    estado: 'registrado',
+    fecha_registro: new Date().toISOString(),
+    historial: [{ fecha: new Date().toISOString(), usuario: usuario.nombre.split(' ').slice(0,2).join(' '), accion: 'Evento registrado' }]
+  };
+
+  eventos.push(evento);
+  localStorage.setItem('mp_eventos', JSON.stringify(eventos));
+
+  // Notificación a Rafael si es grave
+  if (estado.gravedad === 'grave' || estado.gravedad === 'fatal') {
+    const alertas = JSON.parse(localStorage.getItem('mp_alertas_rafael') || '[]');
+    alertas.push({ tipo:'grave', evento_id: id, fecha: new Date().toISOString(), leida: false, mensaje: `Evento ${estado.gravedad.toUpperCase()} registrado en ${estado.lugar}. Plazo legal 24h.` });
+    localStorage.setItem('mp_alertas_rafael', JSON.stringify(alertas));
+  }
+
+  // Pantalla de éxito
+  document.querySelector('.cuerpo').innerHTML = `
+    <div style="text-align:center;padding:48px 24px;">
+      <div style="font-size:64px;margin-bottom:16px;">✅</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--negro);margin-bottom:8px;">¡Evento registrado!</div>
+      <div style="font-size:14px;color:var(--gris-texto);line-height:1.7;margin-bottom:8px;">
+        <strong>${id}</strong> guardado correctamente.<br>
+        Rafael recibirá la notificación y asignará la investigación.
+      </div>
+      ${(estado.gravedad === 'grave' || estado.gravedad === 'fatal') ? `
+      <div style="background:var(--rojo-claro);border:1px solid #fecaca;border-radius:12px;padding:14px;margin:16px 0;text-align:left;">
+        <div style="font-size:13px;font-weight:700;color:var(--rojo);margin-bottom:4px;">🚨 Evento grave — Rafael notificado</div>
+        <div style="font-size:12px;color:var(--gris-texto);">Recuerda que existe un plazo legal de 24 horas para la notificación a la SEREMI si corresponde.</div>
+      </div>` : ''}
+      <button onclick="window.location.href='${usuario.rol === 'gerencia' ? 'dashboard-rafael.html' : 'dashboard-prev.html'}'" style="width:100%;padding:16px;border-radius:14px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;cursor:pointer;margin-top:16px;">
+        Volver al inicio
+      </button>
+      <button onclick="window.location.href='mp-nuevo-evento.html'" style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--gris-borde);background:var(--blanco);color:var(--gris-texto);font-family:'Barlow',sans-serif;font-weight:600;font-size:15px;cursor:pointer;margin-top:10px;">
+        Registrar otro evento
+      </button>
+    </div>`;
+  window.scrollTo(0,0);
+}
+
+function mostrarToast(msg, ok) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (ok ? ' ok' : '') + ' show';
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+actualizarProgreso(1);
+</script>
+</body>
+</html>
