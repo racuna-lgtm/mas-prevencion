@@ -287,10 +287,10 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
       <div class="fg">
         <label class="fl">Evidencia fotográfica (opcional)</label>
         <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <button onclick="abrirCamara()" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:13px;font-weight:600;color:var(--azul);font-family:'Barlow',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">📷 Tomar foto</button>
+          <button onclick="abrirCamara()" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:13px;font-weight:600;color:var(--azul);font-family:'Barlow',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;" id="btn-camara">📷 Tomar foto</button>
           <button onclick="abrirGaleria()" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:13px;font-weight:600;color:var(--gris-texto);font-family:'Barlow',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">🖼 Elegir de galería</button>
         </div>
-        <input type="file" id="file-camara" accept="image/*" capture="environment" onchange="procesarFotoEvento(this)" style="display:none;">
+        <input type="file" id="file-camara" accept="image/*" onchange="procesarFotoEvento(this)" style="display:none;">
         <input type="file" id="file-galeria" accept="image/*" onchange="procesarFotoEvento(this)" style="display:none;">
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;" id="fotos-evento-wrap"></div>
         <div style="font-size:11px;color:var(--gris-muted);">Máximo 3 fotos por evento</div>
@@ -632,7 +632,8 @@ function irPaso1() {
   document.getElementById('paso2').style.display = 'none';
   document.getElementById('paso1').style.display = 'block';
   actualizarProgreso(1);
-renderFotosEvento();
+  window.scrollTo(0,0);
+}
 
 let obsRecon = '', ambContencion = '';
 function selRecon(v){
@@ -642,8 +643,6 @@ function selRecon(v){
 function selContencion(v){
   ambContencion=v;
   ['si','no','parcial'].forEach(x=>{const el=document.getElementById('amb-cont-'+x);if(el){el.style.borderColor=x===v?'var(--naranja)':'var(--gris-borde)';el.style.background=x===v?'var(--naranja-claro)':'var(--blanco)';el.style.color=x===v?'#9A3412':'var(--gris-texto)';}});
-}
-  window.scrollTo(0,0);
 }
 
 function irPaso3() {
@@ -742,8 +741,18 @@ function rehacerVoz() { document.getElementById('trans-box').classList.remove('v
 
 // ── GUARDAR ───────────────────────────────────────────────────
 function guardarEvento() {
-  const tipoTrab = document.getElementById('tipo-trabajador').value;
-  if (!tipoTrab) { mostrarToast('Indica el tipo de trabajador', false); return; }
+  // Validaciones según tipo
+  if (estado.tipo === 'accidente' || estado.tipo === 'incidente') {
+    const tipoTrab = document.getElementById('tipo-trabajador')?.value || '';
+    if (!tipoTrab) {
+      mostrarToast('⚠ Indica el tipo de trabajador', false);
+      document.getElementById('tipo-trabajador')?.scrollIntoView({behavior:'smooth', block:'center'});
+      document.getElementById('tipo-trabajador').style.borderColor = 'var(--rojo)';
+      setTimeout(()=>{ const el=document.getElementById('tipo-trabajador'); if(el) el.style.borderColor=''; }, 2000);
+      return;
+    }
+  }
+  const tipoTrab = document.getElementById('tipo-trabajador')?.value || 'na';
 
   // Leer campos paso 3
   if (tipoTrab !== 'na') {
@@ -845,6 +854,34 @@ function mostrarToast(msg, ok) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.className = 'toast' + (ok ? ' ok' : '') + ' show';
   setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── FOTOS EVENTO ──────────────────────────────────────────────
+let fotosEvento = [];
+function abrirCamara(){
+  if(fotosEvento.length>=3){mostrarToast('Máximo 3 fotos',false);return;}
+  document.getElementById('file-camara').click();
+}
+function abrirGaleria(){
+  if(fotosEvento.length>=3){mostrarToast('Máximo 3 fotos',false);return;}
+  document.getElementById('file-galeria').click();
+}
+function procesarFotoEvento(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{if(fotosEvento.length<3){fotosEvento.push(e.target.result);renderFotosEvento();}};
+  reader.readAsDataURL(file);input.value='';
+}
+function renderFotosEvento(){
+  const wrap=document.getElementById('fotos-evento-wrap');if(!wrap)return;
+  let html=fotosEvento.map((f,i)=>`
+    <div class="foto-slot-ev"><img src="${f}">
+      <div class="foto-del" onclick="fotosEvento.splice(${i},1);renderFotosEvento();event.stopPropagation()">✕</div>
+    </div>`).join('');
+  if(fotosEvento.length<3) html+=`<div class="foto-slot-ev" onclick="abrirGaleria()">
+    <div style="font-size:22px;margin-bottom:3px;">📷</div>
+    <div style="font-size:10px;font-weight:600;color:var(--gris-muted);text-align:center;">${fotosEvento.length===0?'Agregar foto':'Otra foto'}</div></div>`;
+  wrap.innerHTML=html;
 }
 
 actualizarProgreso(1);
