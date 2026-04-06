@@ -87,12 +87,14 @@ body { font-family: 'Barlow', sans-serif; background: var(--gris-bg); color: var
 .e-investigando { background: var(--amarillo-claro); color: var(--amarillo); }
 .e-correctivas { background: var(--morado-claro); color: var(--morado); }
 .e-cerrado { background: var(--verde-claro); color: var(--verde); }
+.e-revision_rafael { background: #fdf2f8; color: #9d174d; border: 1px solid #fbcfe8; }
 .e-grave { background: var(--rojo-claro); color: var(--rojo); }
 
 .tipo-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px; }
 .t-accidente { background: #fee2e2; color: #991b1b; }
 .t-incidente { background: #fef9c3; color: #854d0e; }
-.t-observacion { background: #dcfce7; color: #15803d; }
+.t-observacion { background: #dbeafe; color: #1d4ed8; }
+.t-ambiental { background: #ccfbf1; color: #0f766e; }
 
 .lugar-tag { font-size: 12px; color: var(--gris-texto); }
 
@@ -314,6 +316,29 @@ body { font-family: 'Barlow', sans-serif; background: var(--gris-bg); color: var
   </div>
 </div>
 
+<!-- MODAL DEVOLVER CON OBSERVACIONES -->
+<div class="modal-overlay" id="modal-devolver" onclick="cerrarModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-titulo">Devolver con observaciones</span>
+      <button class="modal-close" onclick="document.getElementById('modal-devolver').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--naranja-claro);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#9A3412;line-height:1.5;">
+        El prevencionista recibirá tus observaciones y deberá corregir la investigación antes de reenviarla.
+      </div>
+      <div class="form-group">
+        <label class="form-label">¿Por qué devuelves esta investigación? (obligatorio)</label>
+        <textarea class="form-input" id="obs-devolucion" rows="4" placeholder="Ej: Falta profundizar en la causa raíz, la medida correctiva N°2 no es suficiente para prevenir la reincidencia..." style="resize:none;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="document.getElementById('modal-devolver').classList.remove('open')">Cancelar</button>
+      <button class="btn-primary" style="background:var(--naranja);" onclick="confirmarDevolucion()">Devolver al prevencionista</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL APROBAR CIERRE -->
 <div class="modal-overlay" id="modal-aprobar" onclick="cerrarModalOverlay(event)">
   <div class="modal">
@@ -467,7 +492,16 @@ function render() {
 
   // KPIs
   document.getElementById('kpi-total').textContent = eventosMes.length;
-  document.getElementById('kpi-total-sub').textContent = eventosMes.length === 0 ? 'Sin eventos registrados' : `${eventosMes.filter(e=>e.tipo==='accidente').length} accidente(s) · ${eventosMes.filter(e=>e.tipo==='incidente').length} incidente(s)`;
+  const acc=eventosMes.filter(e=>e.tipo==='accidente').length;
+  const inc=eventosMes.filter(e=>e.tipo==='incidente').length;
+  const obs=eventosMes.filter(e=>e.tipo==='observacion').length;
+  const amb=eventosMes.filter(e=>e.tipo==='ambiental').length;
+  const partes=[];
+  if(acc>0)partes.push(acc+' accidente'+(acc!==1?'s':''));
+  if(inc>0)partes.push(inc+' incidente'+(inc!==1?'s':''));
+  if(obs>0)partes.push(obs+' observación'+(obs!==1?'es':''));
+  if(amb>0)partes.push(amb+' ambiental'+(amb!==1?'es':''));
+  document.getElementById('kpi-total-sub').textContent = eventosMes.length === 0 ? 'Sin eventos registrados' : partes.join(' · ');
   document.getElementById('kpi-sin-inv').textContent = eventos.filter(e => e.estado === 'registrado').length;
   document.getElementById('kpi-cerrados').textContent = eventosMes.filter(e => e.estado === 'cerrado').length;
 
@@ -486,7 +520,7 @@ function render() {
 function renderAlertas(eventos) {
   const alertas = [];
   eventos.forEach(e => {
-    if (e.gravedad === 'grave' || e.gravedad === 'fatal') {
+    if ((e.gravedad === 'grave' || e.gravedad === 'fatal') && e.estado !== 'cerrado') {
       alertas.push({ tipo: 'grave', texto: `Evento grave — ${e.lugar}`, sub: `${e.subtipo} · ${e.fecha} · ${e.afectado_nombre}`, evento: e });
     }
     if (e.estado === 'registrado') {
@@ -497,6 +531,9 @@ function renderAlertas(eventos) {
     if (e.correctivas) e.correctivas.forEach(c => {
       if (c.estado === 'vencida') alertas.push({ tipo: 'pendiente', texto: `Correctiva vencida — Ev. ${e.id}`, sub: c.descripcion, evento: e });
     });
+    if (e.estado === 'revision_rafael') {
+      alertas.push({ tipo: 'info', texto: `Listo para revisión — Ev. ${e.id}`, sub: `${e.lugar} · Todas las correctivas completadas. Listo para tu aprobación.`, evento: e });
+    }
   });
 
   document.getElementById('alertas-count').textContent = alertas.length + ' alerta' + (alertas.length !== 1 ? 's' : '');
@@ -529,7 +566,7 @@ function renderTabla(eventos) {
       <td style="font-weight:700;color:var(--azul);font-size:12px;">${e.id}</td>
       <td style="font-size:12px;color:var(--gris-texto);">${e.fecha}<br>${e.hora}</td>
       <td>
-        <span class="tipo-badge t-${e.tipo}">${e.tipo === 'accidente' ? '⚡ Accidente' : e.tipo === 'incidente' ? '⚠ Incidente' : '👁 Observación'}</span>
+        <span class="tipo-badge t-${e.tipo}">${e.tipo === 'accidente' ? '⚡ Accidente' : e.tipo === 'incidente' ? '⚠ Incidente' : e.tipo === 'observacion' ? '👁 Observación' : '🌿 Ambiental'}</span>
         ${e.gravedad === 'grave' || e.gravedad === 'fatal' ? '<br><span style="font-size:10px;color:var(--rojo);font-weight:700;">🚨 GRAVE</span>' : ''}
       </td>
       <td style="max-width:220px;">
@@ -538,7 +575,7 @@ function renderTabla(eventos) {
       </td>
       <td><div style="font-size:13px;font-weight:500;">${e.lugar}</div><div style="font-size:11px;color:var(--gris-muted);">${e.area}</div></td>
       <td style="font-size:12px;">${e.prevencionista_nombre.split(' ').slice(0,2).join(' ')}</td>
-      <td><span class="estado-badge e-${e.estado}">${estadoLabel(e.estado)}</span></td>
+      <td><span class="estado-badge e-${e.estado}">${estadoLabel(e.estado)}</span>${avanceCorrectivas(e)}</td>
       <td>
         <div style="display:flex;gap:5px;flex-wrap:wrap;">
           <button class="btn-accion" onclick="abrirDetalle('${e.id}')">Ver</button>
@@ -551,7 +588,15 @@ function renderTabla(eventos) {
 }
 
 function estadoLabel(e) {
-  return { registrado:'Sin asignar', investigando:'Investigando', correctivas:'Con correctivas', cerrado:'Cerrado', grave:'Grave' }[e] || e;
+  return { registrado:'Sin asignar', investigando:'Investigando', correctivas:'Con correctivas', revision_rafael:'Listo para cierre', cerrado:'Cerrado', grave:'Grave' }[e] || e;
+}
+
+function avanceCorrectivas(e) {
+  if (!e.correctivas || e.correctivas.length === 0) return '';
+  const total = e.correctivas.length;
+  const hechas = e.correctivas.filter(c => c.estado === 'completada').length;
+  const color = hechas === total ? 'var(--verde)' : hechas > 0 ? 'var(--naranja)' : 'var(--gris-muted)';
+  return ` <span style="font-size:11px;font-weight:700;color:${color};">${hechas}/${total} ✓</span>`;
 }
 
 function renderChartTipos(eventos) {
@@ -560,10 +605,13 @@ function renderChartTipos(eventos) {
   const inc = eventos.filter(e=>e.tipo==='incidente').length;
   const obs = eventos.filter(e=>e.tipo==='observacion').length;
   const max = Math.max(acc, inc, obs, 1);
+  const amb2=eventos.filter(e=>e.tipo==='ambiental').length;
+  const max2=Math.max(acc,inc,obs,amb2,1);
   document.getElementById('chart-tipos').innerHTML = `
-    <div class="barra-item"><div class="barra-label">Accidentes</div><div class="barra-wrap"><div class="barra-fill" style="width:${acc/max*100}%;background:var(--rojo);"></div></div><div class="barra-num">${acc}</div></div>
-    <div class="barra-item"><div class="barra-label">Incidentes</div><div class="barra-wrap"><div class="barra-fill" style="width:${inc/max*100}%;background:var(--naranja);"></div></div><div class="barra-num">${inc}</div></div>
-    <div class="barra-item"><div class="barra-label">Observaciones</div><div class="barra-wrap"><div class="barra-fill" style="width:${obs/max*100}%;background:var(--verde);"></div></div><div class="barra-num">${obs}</div></div>
+    <div class="barra-item"><div class="barra-label">Accidentes</div><div class="barra-wrap"><div class="barra-fill" style="width:${acc/max2*100}%;background:var(--rojo);"></div></div><div class="barra-num">${acc}</div></div>
+    <div class="barra-item"><div class="barra-label">Incidentes</div><div class="barra-wrap"><div class="barra-fill" style="width:${inc/max2*100}%;background:var(--naranja);"></div></div><div class="barra-num">${inc}</div></div>
+    <div class="barra-item"><div class="barra-label">Observaciones</div><div class="barra-wrap"><div class="barra-fill" style="width:${obs/max2*100}%;background:#1d4ed8;"></div></div><div class="barra-num">${obs}</div></div>
+    <div class="barra-item"><div class="barra-label">Ambientales</div><div class="barra-wrap"><div class="barra-fill" style="width:${amb2/max2*100}%;background:#0f766e;"></div></div><div class="barra-num">${amb2}</div></div>
   `;
 }
 
@@ -716,7 +764,8 @@ function abrirDetalle(id) {
   const footer = document.getElementById('modal-detalle-footer');
   footer.innerHTML = `<button class="btn-secondary" onclick="cerrarModalDetalle()">Cerrar</button>`;
   if (e.estado === 'registrado') footer.innerHTML += `<button class="btn-primary" onclick="cerrarModalDetalle();abrirAsignar('${e.id}')">Asignar investigación</button>`;
-  if (e.estado === 'correctivas') footer.innerHTML += `<button class="btn-primary" style="background:var(--verde);" onclick="cerrarModalDetalle();abrirAprobar('${e.id}')">Aprobar cierre</button>`;
+  if (e.estado === 'investigando') footer.innerHTML += `<button class="btn-secondary" onclick="cerrarModalDetalle();abrirDevolver('${e.id}')">Devolver con observaciones</button><button class="btn-primary" style="background:var(--verde);margin-left:8px;" onclick="cerrarModalDetalle();abrirAprobarInv('${e.id}')">✓ Aprobar investigación</button>`;
+  if (e.estado === 'revision_rafael' || e.estado === 'correctivas') footer.innerHTML += `<button class="btn-secondary" onclick="cerrarModalDetalle();abrirDevolver('${e.id}')">Devolver</button><button class="btn-primary" style="background:var(--verde);margin-left:8px;" onclick="cerrarModalDetalle();abrirAprobar('${e.id}')">✓ Aprobar y cerrar</button>`;
   document.getElementById('modal-detalle').classList.add('open');
 }
 
@@ -758,6 +807,48 @@ function verFotoModal(eventoId, idx) {
   if(!e || !e.fotos) return;
   verFotoRafael(e.fotos[idx]);
 }
+function abrirDevolver(id) {
+  eventoSeleccionado = id;
+  document.getElementById('obs-devolucion').value = '';
+  document.getElementById('modal-devolver').classList.add('open');
+}
+
+function confirmarDevolucion() {
+  const obs = document.getElementById('obs-devolucion').value.trim();
+  if (!obs) { mostrarToast('Escribe el motivo de la devolución', false); return; }
+  const eventos = getEventos();
+  const idx = eventos.findIndex(e => e.id === eventoSeleccionado);
+  eventos[idx].estado = 'investigando';
+  eventos[idx].devolucion_motivo = obs;
+  if (!eventos[idx].historial) eventos[idx].historial = [];
+  eventos[idx].historial.push({
+    fecha: new Date().toISOString(),
+    usuario: 'Rafael Acuña',
+    accion: `⚠ Investigación devuelta. Motivo: ${obs}`
+  });
+  saveEventos(eventos);
+  document.getElementById('modal-devolver').classList.remove('open');
+  mostrarToast('Investigación devuelta al prevencionista', false);
+  render();
+}
+
+function abrirAprobarInv(id) {
+  eventoSeleccionado = id;
+  const eventos = getEventos();
+  const idx = eventos.findIndex(e => e.id === id);
+  eventos[idx].estado = 'correctivas';
+  eventos[idx].investigacion_aprobada = true;
+  if (!eventos[idx].historial) eventos[idx].historial = [];
+  eventos[idx].historial.push({
+    fecha: new Date().toISOString(),
+    usuario: 'Rafael Acuña',
+    accion: '✓ Investigación aprobada. Prevencionista puede implementar las medidas correctivas.'
+  });
+  saveEventos(eventos);
+  mostrarToast('✓ Investigación aprobada', true);
+  render();
+}
+
 function verFotoRafael(src) {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;display:flex;align-items:center;justify-content:center;cursor:pointer;';
@@ -765,6 +856,48 @@ function verFotoRafael(src) {
   overlay.onclick = () => document.body.removeChild(overlay);
   document.body.appendChild(overlay);
 }
+function abrirDevolver(id) {
+  eventoSeleccionado = id;
+  document.getElementById('obs-devolucion').value = '';
+  document.getElementById('modal-devolver').classList.add('open');
+}
+
+function confirmarDevolucion() {
+  const obs = document.getElementById('obs-devolucion').value.trim();
+  if (!obs) { mostrarToast('Escribe el motivo de la devolución', false); return; }
+  const eventos = getEventos();
+  const idx = eventos.findIndex(e => e.id === eventoSeleccionado);
+  eventos[idx].estado = 'investigando';
+  eventos[idx].devolucion_motivo = obs;
+  if (!eventos[idx].historial) eventos[idx].historial = [];
+  eventos[idx].historial.push({
+    fecha: new Date().toISOString(),
+    usuario: 'Rafael Acuña',
+    accion: `⚠ Investigación devuelta. Motivo: ${obs}`
+  });
+  saveEventos(eventos);
+  document.getElementById('modal-devolver').classList.remove('open');
+  mostrarToast('Investigación devuelta al prevencionista', false);
+  render();
+}
+
+function abrirAprobarInv(id) {
+  eventoSeleccionado = id;
+  const eventos = getEventos();
+  const idx = eventos.findIndex(e => e.id === id);
+  eventos[idx].estado = 'correctivas';
+  eventos[idx].investigacion_aprobada = true;
+  if (!eventos[idx].historial) eventos[idx].historial = [];
+  eventos[idx].historial.push({
+    fecha: new Date().toISOString(),
+    usuario: 'Rafael Acuña',
+    accion: '✓ Investigación aprobada. Prevencionista puede implementar las medidas correctivas.'
+  });
+  saveEventos(eventos);
+  mostrarToast('✓ Investigación aprobada', true);
+  render();
+}
+
 function verFotoRafael(src) {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;display:flex;align-items:center;justify-content:center;cursor:pointer;';
