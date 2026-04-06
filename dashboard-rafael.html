@@ -944,55 +944,7 @@ function verFotoRafael(src) {
   overlay.onclick = () => document.body.removeChild(overlay);
   document.body.appendChild(overlay);
 }
-function abrirDevolver(id) {
-  eventoSeleccionado = id;
-  document.getElementById('obs-devolucion').value = '';
-  document.getElementById('modal-devolver').classList.add('open');
-}
 
-function confirmarDevolucion() {
-  const obs = document.getElementById('obs-devolucion').value.trim();
-  if (!obs) { mostrarToast('Escribe el motivo de la devolución', false); return; }
-  const eventos = getEventos();
-  const idx = eventos.findIndex(e => e.id === eventoSeleccionado);
-  eventos[idx].estado = 'investigando';
-  eventos[idx].devolucion_motivo = obs;
-  if (!eventos[idx].historial) eventos[idx].historial = [];
-  eventos[idx].historial.push({
-    fecha: new Date().toISOString(),
-    usuario: 'Rafael Acuña',
-    accion: `⚠ Investigación devuelta. Motivo: ${obs}`
-  });
-  saveEventos(eventos);
-  document.getElementById('modal-devolver').classList.remove('open');
-  mostrarToast('Investigación devuelta al prevencionista', false);
-  render();
-}
-
-function abrirAprobarInv(id) {
-  eventoSeleccionado = id;
-  const eventos = getEventos();
-  const idx = eventos.findIndex(e => e.id === id);
-  eventos[idx].estado = 'correctivas';
-  eventos[idx].investigacion_aprobada = true;
-  if (!eventos[idx].historial) eventos[idx].historial = [];
-  eventos[idx].historial.push({
-    fecha: new Date().toISOString(),
-    usuario: 'Rafael Acuña',
-    accion: '✓ Investigación aprobada. Prevencionista puede implementar las medidas correctivas.'
-  });
-  saveEventos(eventos);
-  mostrarToast('✓ Investigación aprobada', true);
-  render();
-}
-
-function verFotoRafael(src) {
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;display:flex;align-items:center;justify-content:center;cursor:pointer;';
-  overlay.innerHTML = '<img src="'+src+'" style="max-width:95vw;max-height:90vh;border-radius:10px;">';
-  overlay.onclick = () => document.body.removeChild(overlay);
-  document.body.appendChild(overlay);
-}
 function cerrarSesion() {
   localStorage.removeItem('mp_usuario');
   window.location.href = 'index.html';
