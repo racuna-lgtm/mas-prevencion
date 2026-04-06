@@ -194,6 +194,10 @@ if(!evento){
   document.body.innerHTML='<div style="padding:40px;text-align:center;color:#5a6480;font-family:Barlow,sans-serif;"><div style="font-size:40px;margin-bottom:12px;">⚠️</div><div style="font-size:16px;font-weight:600;">Evento no encontrado</div><br><a href="dashboard-prev.html" style="color:#1B2E6E;font-weight:700;">Volver al inicio</a></div>';
 } else {
   document.getElementById('header-sub').textContent = evento.id + ' · ' + evento.subtipo + ' · ' + evento.lugar;
+  if(evento.devolucion_motivo){
+    document.getElementById('devolucion-aviso').style.display='block';
+    document.getElementById('devolucion-texto').textContent=evento.devolucion_motivo;
+  }
   document.getElementById('res-id').textContent = evento.id + ' — ' + evento.subtipo;
   document.getElementById('res-desc').textContent = evento.descripcion;
   document.getElementById('resumen-evento').style.display = 'block';
