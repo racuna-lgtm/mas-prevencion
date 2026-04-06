@@ -157,7 +157,7 @@ document.getElementById('topbar-user').textContent = usuario.nombre.split(' ')[0
 
 function getEventos() { return JSON.parse(localStorage.getItem('mp_eventos') || '[]'); }
 
-function estadoLabel(e) {
+function estadoLabelPrev(e) {
   return {registrado:'Sin asignar',investigando:'Investigando',correctivas:'Con correctivas',cerrado:'Cerrado'}[e] || e;
 }
 
@@ -178,7 +178,7 @@ function render() {
     wrapPend.innerHTML = `
       <div class="empty">
         <div class="empty-icon">✅</div>
-        Sin tareas pendientes asignadas por Rafael
+        Sin tareas pendientes asignadas por jefatura
       </div>`;
   } else {
     secPend.textContent = `Mis tareas pendientes (${misTareas.length})`;
@@ -192,7 +192,7 @@ function render() {
           <div class="pendiente-header">
             <span class="pendiente-id">${e.id}</span>
             <span class="pendiente-tipo t-${e.tipo === 'accidente' ? 'acc' : 'inc'}">${e.subtipo}</span>
-            <span class="estado-pill e-${e.estado}">${estadoLabel(e.estado)}</span>
+            <span class="estado-pill e-${e.estado}">${estadoLabelPrev(e.estado)}</span>
           </div>
           <div class="pendiente-desc">${e.descripcion}</div>
           <div class="pendiente-meta">
@@ -232,7 +232,7 @@ function render() {
     <div class="reg-item">
       <div class="reg-header">
         <span class="reg-fecha">${e.id} · ${e.fecha} ${e.hora}</span>
-        <span class="reg-estado e-${e.estado}">${estadoLabel(e.estado)}</span>
+        <span class="reg-estado e-${e.estado}">${estadoLabelPrev(e.estado)}</span>
       </div>
       <div class="reg-tipo">${e.tipo === 'accidente' ? '⚡' : e.tipo === 'incidente' ? '⚠️' : '👁'} ${e.subtipo}</div>
       <div class="reg-desc">${e.descripcion}</div>
