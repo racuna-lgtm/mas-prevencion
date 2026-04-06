@@ -272,6 +272,49 @@ body { font-family: 'Barlow', sans-serif; background: var(--gris-bg); color: var
     </div>
   </div>
 
+  <!-- KPIs LEGALES -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;">
+      <span class="card-titulo">📊 Índices de accidentabilidad</span>
+      <button onclick="toggleKpiForm()" id="btn-kpi" style="padding:6px 14px;border-radius:8px;border:1.5px solid var(--gris-borde);background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;color:var(--azul);">+ Ingresar HH del mes</button>
+    </div>
+    <div class="card-body">
+      <div id="kpi-form-rafael" style="display:none;background:var(--gris-bg);border-radius:10px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:600;color:var(--gris-texto);margin-bottom:10px;">Horas hombre trabajadas este mes (estimadas)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:flex-end;">
+          <div><label style="font-size:11px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:4px;">Total HH</label>
+            <input type="number" id="hh-total-r" placeholder="Ej: 15000" style="width:100%;padding:10px 12px;border:1.5px solid var(--gris-borde);border-radius:9px;font-size:14px;font-family:'Barlow',sans-serif;"></div>
+          <div><label style="font-size:11px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:4px;">N° trabajadores</label>
+            <input type="number" id="nt-r" placeholder="Ej: 85" style="width:100%;padding:10px 12px;border:1.5px solid var(--gris-borde);border-radius:9px;font-size:14px;font-family:'Barlow',sans-serif;"></div>
+          <button onclick="calcularKpisRafael()" style="padding:10px 16px;border-radius:9px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap;">Calcular</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;" id="kpi-legales-grid">
+        <div style="background:var(--gris-bg);border-radius:10px;padding:12px 14px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Tasa frecuencia</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--azul);" id="kpi-tf-r">—</div>
+          <div style="font-size:10px;color:var(--gris-muted);">acc × 1M ÷ HH</div>
+        </div>
+        <div style="background:var(--gris-bg);border-radius:10px;padding:12px 14px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Tasa gravedad</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--naranja);" id="kpi-tg-r">—</div>
+          <div style="font-size:10px;color:var(--gris-muted);">días × 1M ÷ HH</div>
+        </div>
+        <div style="background:var(--gris-bg);border-radius:10px;padding:12px 14px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Índice incidencia</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--negro);" id="kpi-ii-r">—</div>
+          <div style="font-size:10px;color:var(--gris-muted);">acc × 100 ÷ trab.</div>
+        </div>
+        <div style="background:var(--gris-bg);border-radius:10px;padding:12px 14px;text-align:center;">
+          <div style="font-size:10px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Ratio acc/incidente</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--negro);" id="kpi-ratio-r">—</div>
+          <div style="font-size:10px;color:var(--gris-muted);">ideal: 1 de cada 20</div>
+        </div>
+      </div>
+      <div id="kpi-sin-datos" style="margin-top:10px;font-size:12px;color:var(--gris-muted);text-align:center;">Ingresa las HH del mes para calcular los índices legales.</div>
+    </div>
+  </div>
+
   <!-- DISTRIBUCIÓN POR LUGAR -->
   <div class="grid-2">
     <div class="card">
@@ -849,6 +892,51 @@ function abrirAprobarInv(id) {
   render();
 }
 
+function toggleKpiForm(){
+  const f=document.getElementById('kpi-form-rafael');
+  const btn=document.getElementById('btn-kpi');
+  const visible=f.style.display==='block';
+  f.style.display=visible?'none':'block';
+  btn.textContent=visible?'+ Ingresar HH del mes':'Cerrar';
+}
+function calcularKpisRafael(){
+  const hh=parseFloat(document.getElementById('hh-total-r').value)||0;
+  const nt=parseFloat(document.getElementById('nt-r').value)||0;
+  if(!hh||!nt){mostrarToast('Ingresa HH y N° de trabajadores',false);return;}
+  const eventos=getEventos();
+  const hoy=new Date();
+  const mes=hoy.getMonth(),anio=hoy.getFullYear();
+  const eventosMes=eventos.filter(e=>{const f=new Date(e.fecha);return f.getMonth()===mes&&f.getFullYear()===anio;});
+  const accidentes=eventosMes.filter(e=>e.tipo==='accidente');
+  const incidentes=eventosMes.filter(e=>e.tipo==='incidente');
+  const diasPerdidos=accidentes.reduce((sum,e)=>{
+    const dp=e.dias_perdidos||'0';
+    if(dp.includes('7'))return sum+10;
+    if(dp.includes('4'))return sum+5;
+    if(dp.includes('1'))return sum+2;
+    return sum;
+  },0);
+  const tf=Math.round(accidentes.length*1000000/hh);
+  const tg=Math.round(diasPerdidos*1000000/hh);
+  const ii=Math.round(accidentes.length*100/nt*10)/10;
+  const ratio=incidentes.length>0?(accidentes.length/incidentes.length).toFixed(2):'Sin incidentes';
+  document.getElementById('kpi-tf-r').textContent=tf||0;
+  document.getElementById('kpi-tg-r').textContent=tg||0;
+  document.getElementById('kpi-ii-r').textContent=ii||0;
+  document.getElementById('kpi-ratio-r').textContent=ratio;
+  document.getElementById('kpi-sin-datos').style.display='none';
+  localStorage.setItem('mp_kpi_hh_r',JSON.stringify({hh,nt}));
+  toggleKpiForm();
+  mostrarToast('✓ KPIs calculados',true);
+}
+// Restaurar KPIs guardados
+const _kkpi=JSON.parse(localStorage.getItem('mp_kpi_hh_r')||'null');
+if(_kkpi){
+  document.getElementById('hh-total-r').value=_kkpi.hh;
+  document.getElementById('nt-r').value=_kkpi.nt;
+  setTimeout(calcularKpisRafael,500);
+}
+
 function verFotoRafael(src) {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;display:flex;align-items:center;justify-content:center;cursor:pointer;';
@@ -896,6 +984,51 @@ function abrirAprobarInv(id) {
   saveEventos(eventos);
   mostrarToast('✓ Investigación aprobada', true);
   render();
+}
+
+function toggleKpiForm(){
+  const f=document.getElementById('kpi-form-rafael');
+  const btn=document.getElementById('btn-kpi');
+  const visible=f.style.display==='block';
+  f.style.display=visible?'none':'block';
+  btn.textContent=visible?'+ Ingresar HH del mes':'Cerrar';
+}
+function calcularKpisRafael(){
+  const hh=parseFloat(document.getElementById('hh-total-r').value)||0;
+  const nt=parseFloat(document.getElementById('nt-r').value)||0;
+  if(!hh||!nt){mostrarToast('Ingresa HH y N° de trabajadores',false);return;}
+  const eventos=getEventos();
+  const hoy=new Date();
+  const mes=hoy.getMonth(),anio=hoy.getFullYear();
+  const eventosMes=eventos.filter(e=>{const f=new Date(e.fecha);return f.getMonth()===mes&&f.getFullYear()===anio;});
+  const accidentes=eventosMes.filter(e=>e.tipo==='accidente');
+  const incidentes=eventosMes.filter(e=>e.tipo==='incidente');
+  const diasPerdidos=accidentes.reduce((sum,e)=>{
+    const dp=e.dias_perdidos||'0';
+    if(dp.includes('7'))return sum+10;
+    if(dp.includes('4'))return sum+5;
+    if(dp.includes('1'))return sum+2;
+    return sum;
+  },0);
+  const tf=Math.round(accidentes.length*1000000/hh);
+  const tg=Math.round(diasPerdidos*1000000/hh);
+  const ii=Math.round(accidentes.length*100/nt*10)/10;
+  const ratio=incidentes.length>0?(accidentes.length/incidentes.length).toFixed(2):'Sin incidentes';
+  document.getElementById('kpi-tf-r').textContent=tf||0;
+  document.getElementById('kpi-tg-r').textContent=tg||0;
+  document.getElementById('kpi-ii-r').textContent=ii||0;
+  document.getElementById('kpi-ratio-r').textContent=ratio;
+  document.getElementById('kpi-sin-datos').style.display='none';
+  localStorage.setItem('mp_kpi_hh_r',JSON.stringify({hh,nt}));
+  toggleKpiForm();
+  mostrarToast('✓ KPIs calculados',true);
+}
+// Restaurar KPIs guardados
+const _kkpi=JSON.parse(localStorage.getItem('mp_kpi_hh_r')||'null');
+if(_kkpi){
+  document.getElementById('hh-total-r').value=_kkpi.hh;
+  document.getElementById('nt-r').value=_kkpi.nt;
+  setTimeout(calcularKpisRafael,500);
 }
 
 function verFotoRafael(src) {
