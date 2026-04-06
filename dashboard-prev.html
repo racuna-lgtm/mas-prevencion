@@ -163,10 +163,12 @@ function estadoLabelPrev(e) {
 
 function render() {
   const todos = getEventos();
+  // Solo eventos registrados POR este prevencionista
   const misEventos = todos.filter(e => e.prevencionista_codigo === usuario.codigo);
+  // Tareas: solo las asignadas a este prevencionista específicamente
   const misTareas = todos.filter(e =>
     e.asignado_a === usuario.codigo &&
-    (e.estado === 'investigando' || e.estado === 'correctivas')
+    (e.estado === 'investigando' || e.estado === 'correctivas' || e.estado === 'revision_rafael')
   );
 
   // Pendientes
