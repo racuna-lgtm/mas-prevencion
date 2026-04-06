@@ -286,14 +286,14 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
 
       <div class="fg">
         <label class="fl">Evidencia fotográfica (opcional)</label>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;" id="fotos-evento-wrap">
-          <div class="foto-slot-ev" onclick="abrirCamaraEvento()" id="slot-0">
-            <div style="font-size:22px;margin-bottom:3px;">📷</div>
-            <div style="font-size:10px;font-weight:600;color:var(--gris-muted);text-align:center;">Agregar foto</div>
-          </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button onclick="abrirCamara()" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:13px;font-weight:600;color:var(--azul);font-family:'Barlow',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">📷 Tomar foto</button>
+          <button onclick="abrirGaleria()" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:13px;font-weight:600;color:var(--gris-texto);font-family:'Barlow',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;">🖼 Elegir de galería</button>
         </div>
-        <input type="file" id="file-evento" accept="image/*" capture="environment" onchange="procesarFotoEvento(this)">
-        <div style="font-size:11px;color:var(--gris-muted);margin-top:4px;">Máximo 3 fotos · Toca para tomar o elegir de galería</div>
+        <input type="file" id="file-camara" accept="image/*" capture="environment" onchange="procesarFotoEvento(this)" style="display:none;">
+        <input type="file" id="file-galeria" accept="image/*" onchange="procesarFotoEvento(this)" style="display:none;">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;" id="fotos-evento-wrap"></div>
+        <div style="font-size:11px;color:var(--gris-muted);">Máximo 3 fotos por evento</div>
       </div>
 
       <div class="fg">
@@ -350,11 +350,13 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
 <!-- PASO 3 -->
 <div id="paso3" style="display:none;">
 
+  <!-- Paso 3 dinámico según tipo -->
+  <div id="paso3-accidente-incidente">
   <div class="seccion">
-    <div class="sec-header"><span class="sec-icon">👷</span><span class="sec-titulo">Datos del afectado</span></div>
+    <div class="sec-header"><span class="sec-icon">👷</span><span class="sec-titulo" id="sec-afectado-titulo">Datos del afectado</span></div>
     <div class="sec-body">
       <div class="fg">
-        <label class="fl">Tipo de trabajador</label>
+        <label class="fl" id="label-tipo-trab">Tipo de trabajador</label>
         <select class="fs" id="tipo-trabajador" onchange="mostrarCamposAfectado(this.value)">
           <option value="">Seleccionar...</option>
           <option value="socoval">Trabajador Socoval</option>
@@ -460,6 +462,52 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
     </div>
   </div>
 
+  </div><!-- /paso3-accidente-incidente -->
+
+  <!-- PASO 3 OBSERVACIÓN -->
+  <div id="paso3-observacion" style="display:none;">
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">👁️</span><span class="sec-titulo">Trabajador observado (opcional)</span></div>
+    <div class="sec-body">
+      <div class="fg"><label class="fl">Nombre del trabajador observado</label><input class="fi" id="obs-nombre" placeholder="Opcional — si aplica"></div>
+      <div class="fg-row">
+        <div class="fg"><label class="fl">Cargo</label><input class="fi" id="obs-cargo" placeholder="Ej: Operario, Mecánico..."></div>
+        <div class="fg"><label class="fl">Tipo</label><select class="fs" id="obs-tipo"><option value="">Seleccionar...</option><option value="socoval">Trabajador Socoval</option><option value="contratista">Contratista</option></select></div>
+      </div>
+      <div class="fg"><label class="fl">¿Deseas reconocer esta práctica?</label>
+        <div style="display:flex;gap:8px;">
+          <div id="obs-recon-si" onclick="selRecon('si')" style="flex:1;padding:11px;border-radius:10px;border:2px solid var(--gris-borde);cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--gris-texto);transition:all 0.15s;">⭐ Sí, reconocer</div>
+          <div id="obs-recon-no" onclick="selRecon('no')" style="flex:1;padding:11px;border-radius:10px;border:2px solid var(--gris-borde);cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--gris-texto);transition:all 0.15s;">📋 Solo registrar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div><!-- /paso3-observacion -->
+
+  <!-- PASO 3 AMBIENTAL -->
+  <div id="paso3-ambiental" style="display:none;">
+  <div class="seccion">
+    <div class="sec-header"><span class="sec-icon">🌿</span><span class="sec-titulo">Datos del impacto ambiental</span></div>
+    <div class="sec-body">
+      <div class="fg"><label class="fl">Sustancia o material involucrado</label><input class="fi" id="amb-sustancia" placeholder="Ej: Aceite hidráulico, Residuo sólido, Gases..."></div>
+      <div class="fg-row">
+        <div class="fg"><label class="fl">Volumen estimado</label><input class="fi" id="amb-volumen" placeholder="Ej: 50 litros, 2 kg..."></div>
+        <div class="fg"><label class="fl">Medio afectado</label>
+          <select class="fs" id="amb-medio"><option value="">Seleccionar...</option><option>Suelo</option><option>Agua superficial</option><option>Agua subterránea</option><option>Aire</option><option>Múltiple</option></select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">¿Se contuvo el derrame/emisión?</label>
+        <div style="display:flex;gap:8px;">
+          <div id="amb-cont-si" onclick="selContencion('si')" style="flex:1;padding:11px;border-radius:10px;border:2px solid var(--gris-borde);cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--gris-texto);transition:all 0.15s;">✅ Sí, contenido</div>
+          <div id="amb-cont-no" onclick="selContencion('no')" style="flex:1;padding:11px;border-radius:10px;border:2px solid var(--gris-borde);cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--gris-texto);transition:all 0.15s;">⚠️ No contenido</div>
+          <div id="amb-cont-parcial" onclick="selContencion('parcial')" style="flex:1;padding:11px;border-radius:10px;border:2px solid var(--gris-borde);cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--gris-texto);transition:all 0.15s;">🔸 Parcial</div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Acciones de contención tomadas</label><textarea class="ft" id="amb-contencion" rows="2" placeholder="Ej: Se colocaron paños absorbentes, se cerró válvula..."></textarea></div>
+    </div>
+  </div>
+  </div><!-- /paso3-ambiental -->
+
   <div style="display:flex;gap:10px;margin-bottom:14px;">
     <button class="btn-guardar" style="background:var(--gris-borde);color:var(--gris-texto);flex:0 0 auto;width:auto;padding:17px 20px;" onclick="irPaso2()">← Atrás</button>
     <button class="btn-guardar" id="btn-guardar-final" onclick="guardarEvento()" style="flex:1;">
@@ -508,6 +556,9 @@ function selTipo(tipo, el) {
   const agenteSec = document.getElementById('sec-agente');
   if (tipo === 'observacion' || tipo === 'ambiental') agenteSec.classList.remove('visible');
   else agenteSec.classList.add('visible');
+  // Etiqueta dinámica
+  const agenteLbl = agenteSec.querySelector('.fl');
+  if (agenteLbl) agenteLbl.textContent = tipo === 'incidente' ? '¿Qué generó el riesgo?' : 'Agente causante';
   estado.subtipo = ''; estado.gravedad = '';
 }
 
@@ -581,6 +632,17 @@ function irPaso1() {
   document.getElementById('paso2').style.display = 'none';
   document.getElementById('paso1').style.display = 'block';
   actualizarProgreso(1);
+renderFotosEvento();
+
+let obsRecon = '', ambContencion = '';
+function selRecon(v){
+  obsRecon=v;
+  ['si','no'].forEach(x=>{const el=document.getElementById('obs-recon-'+x);if(el){el.style.borderColor=x===v?'var(--azul)':'var(--gris-borde)';el.style.background=x===v?'var(--azul-claro)':'var(--blanco)';el.style.color=x===v?'var(--azul)':'var(--gris-texto)';}});
+}
+function selContencion(v){
+  ambContencion=v;
+  ['si','no','parcial'].forEach(x=>{const el=document.getElementById('amb-cont-'+x);if(el){el.style.borderColor=x===v?'var(--naranja)':'var(--gris-borde)';el.style.background=x===v?'var(--naranja-claro)':'var(--blanco)';el.style.color=x===v?'#9A3412':'var(--gris-texto)';}});
+}
   window.scrollTo(0,0);
 }
 
@@ -594,6 +656,10 @@ function irPaso3() {
   // Mostrar campos lesión solo si es accidente con lesionados
   const hayLesion = estado.tipo === 'accidente' && estado.gravedad !== 'sin_lesion' && estado.gravedad !== '';
   document.getElementById('campos-lesion').style.display = hayLesion ? 'block' : 'none';
+  // Mostrar paso3 correcto según tipo
+  document.getElementById('paso3-accidente-incidente').style.display = (estado.tipo==='accidente'||estado.tipo==='incidente') ? 'block' : 'none';
+  document.getElementById('paso3-observacion').style.display = estado.tipo==='observacion' ? 'block' : 'none';
+  document.getElementById('paso3-ambiental').style.display = estado.tipo==='ambiental' ? 'block' : 'none';
   document.getElementById('paso2').style.display = 'none';
   document.getElementById('paso3').style.display = 'block';
   actualizarProgreso(3);
@@ -681,8 +747,13 @@ function guardarEvento() {
 
   // Leer campos paso 3
   if (tipoTrab !== 'na') {
+    const rutVal = document.getElementById('afectado-rut')?.value.trim() || '';
+    if ((estado.gravedad === 'grave' || estado.gravedad === 'fatal') && !rutVal) {
+      mostrarToast('RUT del afectado es obligatorio en accidentes graves', false);
+      return;
+    }
     estado.afectadoNombre = document.getElementById('afectado-nombre').value.trim() || 'Sin nombre registrado';
-    estado.afectadoRut = document.getElementById('afectado-rut').value.trim();
+    estado.afectadoRut = rutVal;
     estado.afectadoCargo = document.getElementById('afectado-cargo').value.trim();
     estado.afectadoSupervisor = document.getElementById('afectado-supervisor').value.trim();
     estado.antiguedad = document.getElementById('antiguedad').value;
@@ -753,11 +824,11 @@ function guardarEvento() {
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--negro);margin-bottom:8px;">¡Evento registrado!</div>
       <div style="font-size:14px;color:var(--gris-texto);line-height:1.7;margin-bottom:8px;">
         <strong>${id}</strong> guardado correctamente.<br>
-        Rafael recibirá la notificación y asignará la investigación.
+        Jefatura recibirá la notificación y asignará la investigación.
       </div>
       ${(estado.gravedad === 'grave' || estado.gravedad === 'fatal') ? `
       <div style="background:var(--rojo-claro);border:1px solid #fecaca;border-radius:12px;padding:14px;margin:16px 0;text-align:left;">
-        <div style="font-size:13px;font-weight:700;color:var(--rojo);margin-bottom:4px;">🚨 Evento grave — Rafael notificado</div>
+        <div style="font-size:13px;font-weight:700;color:var(--rojo);margin-bottom:4px;">🚨 Evento grave — Jefatura notificada</div>
         <div style="font-size:12px;color:var(--gris-texto);">Recuerda que existe un plazo legal de 24 horas para la notificación a la SEREMI si corresponde.</div>
       </div>` : ''}
       <button onclick="window.location.href='${usuario.rol === 'gerencia' ? 'dashboard-rafael.html' : 'dashboard-prev.html'}'" style="width:100%;padding:16px;border-radius:14px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;cursor:pointer;margin-top:16px;">
@@ -777,6 +848,17 @@ function mostrarToast(msg, ok) {
 }
 
 actualizarProgreso(1);
+renderFotosEvento();
+
+let obsRecon = '', ambContencion = '';
+function selRecon(v){
+  obsRecon=v;
+  ['si','no'].forEach(x=>{const el=document.getElementById('obs-recon-'+x);if(el){el.style.borderColor=x===v?'var(--azul)':'var(--gris-borde)';el.style.background=x===v?'var(--azul-claro)':'var(--blanco)';el.style.color=x===v?'var(--azul)':'var(--gris-texto)';}});
+}
+function selContencion(v){
+  ambContencion=v;
+  ['si','no','parcial'].forEach(x=>{const el=document.getElementById('amb-cont-'+x);if(el){el.style.borderColor=x===v?'var(--naranja)':'var(--gris-borde)';el.style.background=x===v?'var(--naranja-claro)':'var(--blanco)';el.style.color=x===v?'#9A3412':'var(--gris-texto)';}});
+}
 </script>
 </body>
 </html>
