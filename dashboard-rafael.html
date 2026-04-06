@@ -986,51 +986,6 @@ function abrirAprobarInv(id) {
   render();
 }
 
-function toggleKpiForm(){
-  const f=document.getElementById('kpi-form-rafael');
-  const btn=document.getElementById('btn-kpi');
-  const visible=f.style.display==='block';
-  f.style.display=visible?'none':'block';
-  btn.textContent=visible?'+ Ingresar HH del mes':'Cerrar';
-}
-function calcularKpisRafael(){
-  const hh=parseFloat(document.getElementById('hh-total-r').value)||0;
-  const nt=parseFloat(document.getElementById('nt-r').value)||0;
-  if(!hh||!nt){mostrarToast('Ingresa HH y N° de trabajadores',false);return;}
-  const eventos=getEventos();
-  const hoy=new Date();
-  const mes=hoy.getMonth(),anio=hoy.getFullYear();
-  const eventosMes=eventos.filter(e=>{const f=new Date(e.fecha);return f.getMonth()===mes&&f.getFullYear()===anio;});
-  const accidentes=eventosMes.filter(e=>e.tipo==='accidente');
-  const incidentes=eventosMes.filter(e=>e.tipo==='incidente');
-  const diasPerdidos=accidentes.reduce((sum,e)=>{
-    const dp=e.dias_perdidos||'0';
-    if(dp.includes('7'))return sum+10;
-    if(dp.includes('4'))return sum+5;
-    if(dp.includes('1'))return sum+2;
-    return sum;
-  },0);
-  const tf=Math.round(accidentes.length*1000000/hh);
-  const tg=Math.round(diasPerdidos*1000000/hh);
-  const ii=Math.round(accidentes.length*100/nt*10)/10;
-  const ratio=incidentes.length>0?(accidentes.length/incidentes.length).toFixed(2):'Sin incidentes';
-  document.getElementById('kpi-tf-r').textContent=tf||0;
-  document.getElementById('kpi-tg-r').textContent=tg||0;
-  document.getElementById('kpi-ii-r').textContent=ii||0;
-  document.getElementById('kpi-ratio-r').textContent=ratio;
-  document.getElementById('kpi-sin-datos').style.display='none';
-  localStorage.setItem('mp_kpi_hh_r',JSON.stringify({hh,nt}));
-  toggleKpiForm();
-  mostrarToast('✓ KPIs calculados',true);
-}
-// Restaurar KPIs guardados
-const _kkpi=JSON.parse(localStorage.getItem('mp_kpi_hh_r')||'null');
-if(_kkpi){
-  document.getElementById('hh-total-r').value=_kkpi.hh;
-  document.getElementById('nt-r').value=_kkpi.nt;
-  setTimeout(calcularKpisRafael,500);
-}
-
 function verFotoRafael(src) {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;display:flex;align-items:center;justify-content:center;cursor:pointer;';
