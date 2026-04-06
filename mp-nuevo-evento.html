@@ -887,15 +887,6 @@ function renderFotosEvento(){
 actualizarProgreso(1);
 renderFotosEvento();
 
-let obsRecon = '', ambContencion = '';
-function selRecon(v){
-  obsRecon=v;
-  ['si','no'].forEach(x=>{const el=document.getElementById('obs-recon-'+x);if(el){el.style.borderColor=x===v?'var(--azul)':'var(--gris-borde)';el.style.background=x===v?'var(--azul-claro)':'var(--blanco)';el.style.color=x===v?'var(--azul)':'var(--gris-texto)';}});
-}
-function selContencion(v){
-  ambContencion=v;
-  ['si','no','parcial'].forEach(x=>{const el=document.getElementById('amb-cont-'+x);if(el){el.style.borderColor=x===v?'var(--naranja)':'var(--gris-borde)';el.style.background=x===v?'var(--naranja-claro)':'var(--blanco)';el.style.color=x===v?'#9A3412':'var(--gris-texto)';}});
-}
 </script>
 </body>
 </html>
