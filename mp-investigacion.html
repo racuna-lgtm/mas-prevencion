@@ -167,7 +167,7 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
   </div>
 
   <button class="btn-guardar" onclick="guardarInvestigacion()">
-    Enviar investigación a Rafael →
+    Enviar investigación a jefatura →
   </button>
 </div>
 
@@ -249,7 +249,14 @@ function renderCorrectivas(){
         <textarea class="ft" id="desc-${c.id}" rows="2" placeholder="¿Qué se debe hacer para prevenir que se repita?" oninput="updateCorr('${c.id}','desc',this.value);actualizarProgreso();">${c.desc}</textarea>
       </div>
       <div class="fg">
-        <label class="fl">Tipo de corrección</label>
+        <label class="fl">Naturaleza de la acción</label>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <div class="${c.naturaleza==='correctiva'?'tc-opt sel-inm':'tc-opt'}" onclick="selNaturaleza('${c.id}','correctiva',this)">🔧 Correctiva</div>
+          <div class="${c.naturaleza==='preventiva'?'tc-opt sel-lp':'tc-opt'}" onclick="selNaturaleza('${c.id}','preventiva',this)">🛡️ Preventiva</div>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Plazo de ejecución</label>
         <div class="tipo-corr">
           <div class="tc-opt ${c.tipo==='inmediata'?'sel-inm':''}" onclick="selTipoCorr('${c.id}','inmediata',this)">🚨 Inmediata</div>
           <div class="tc-opt ${c.tipo==='corto_plazo'?'sel-cp':''}" onclick="selTipoCorr('${c.id}','corto_plazo',this)">⏱ Corto plazo</div>
@@ -356,6 +363,7 @@ function guardarInvestigacion(){
   if(idx<0){mostrarToast('Error: evento no encontrado',false);return;}
 
   todos[idx].estado='correctivas';
+  todos[idx].fotos_investigacion=fotosInv;
   todos[idx].investigacion={
     porques: porqs,
     causa_raiz: document.getElementById('causa-raiz').value.trim(),
@@ -384,13 +392,42 @@ function guardarInvestigacion(){
       <div style="font-size:64px;margin-bottom:16px;">📋</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--negro);margin-bottom:8px;">Investigación enviada</div>
       <div style="font-size:14px;color:var(--gris-texto);line-height:1.7;margin-bottom:24px;">
-        La investigación del evento <strong>${eventoId}</strong> fue enviada a Rafael.<br>
-        Él la revisará y aprobará el cierre cuando todo esté en orden.
+        La investigación del evento <strong>${eventoId}</strong> fue enviada a jefatura.<br>
+        Será revisada y aprobada por gerencia cuando todo esté en orden.
       </div>
       <button onclick="window.location.href='dashboard-prev.html'" style="width:100%;padding:16px;border-radius:14px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;cursor:pointer;margin-bottom:10px;">Volver al inicio</button>
       <button onclick="window.location.href='mp-mis-registros.html'" style="width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--gris-borde);background:var(--blanco);color:var(--gris-texto);font-family:'Barlow',sans-serif;font-weight:600;font-size:15px;cursor:pointer;">Ver mis registros</button>
     </div>`;
   window.scrollTo(0,0);
+}
+
+function selNaturaleza(id,nat,el){
+  updateCorr(id,'naturaleza',nat);
+  const card=document.getElementById('card-'+id);
+  if(!card)return;
+  card.querySelectorAll('.tc-opt').forEach((o,i)=>{if(i<2){o.className='tc-opt';}});
+  el.classList.add(nat==='correctiva'?'sel-inm':'sel-lp');
+}
+
+// Fotos investigación
+let fotosInv=[];
+function abrirCamaraInv(){if(fotosInv.length>=3){mostrarToast('Máximo 3 fotos',false);return;}document.getElementById('file-inv-camara').click();}
+function abrirGaleriaInv(){if(fotosInv.length>=3){mostrarToast('Máximo 3 fotos',false);return;}document.getElementById('file-inv-galeria').click();}
+function procesarFotoInv(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    if(fotosInv.length<3){fotosInv.push(e.target.result);renderFotosInv();}
+  };
+  reader.readAsDataURL(file);input.value='';
+}
+function renderFotosInv(){
+  const wrap=document.getElementById('fotos-inv-wrap');if(!wrap)return;
+  wrap.innerHTML=fotosInv.map((f,i)=>`
+    <div style="position:relative;width:72px;height:72px;">
+      <img src="${f}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;">
+      <div onclick="fotosInv.splice(${i},1);renderFotosInv();" style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:5px;background:rgba(0,0,0,0.6);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;">✕</div>
+    </div>`).join('');
 }
 
 function mostrarToast(msg,ok){
