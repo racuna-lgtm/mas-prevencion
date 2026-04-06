@@ -76,7 +76,10 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
 <div class="body">
   <div class="top-row">
     <div class="page-titulo">Prevencionistas</div>
-    <button class="btn-nuevo-usuario" onclick="abrirModalNuevo()">+ Agregar usuario</button>
+    <div style="display:flex;gap:8px;">
+      <button onclick="confirmarLimpiar()" style="padding:10px 14px;border-radius:10px;border:1.5px solid #fecaca;background:#fee2e2;color:#991B1B;font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;cursor:pointer;">🗑 Limpiar eventos demo</button>
+      <button class="btn-nuevo-usuario" onclick="abrirModalNuevo()">+ Agregar usuario</button>
+    </div>
   </div>
 
   <div class="nota-rafael">
@@ -87,6 +90,49 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
     <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Usuarios totales</div></div>
     <div class="stat-card"><div class="stat-num" style="color:var(--verde);" id="stat-activos">0</div><div class="stat-label">Activos</div></div>
     <div class="stat-card"><div class="stat-num" style="color:var(--gris-muted);" id="stat-inactivos">0</div><div class="stat-label">Inactivos</div></div>
+  </div>
+
+  <!-- KPIs LEGALES -->
+  <div style="background:var(--blanco);border-radius:14px;border:1px solid var(--gris-borde);margin-bottom:20px;">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--gris-borde);display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:var(--negro);">📊 KPIs legales del mes</div>
+      <button onclick="toggleKpis()" style="padding:6px 12px;border-radius:8px;border:1.5px solid var(--gris-borde);background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;font-family:'Barlow',sans-serif;color:var(--gris-texto);" id="btn-kpi-toggle">Ingresar HH</button>
+    </div>
+    <div style="padding:14px 18px;" id="kpi-body">
+      <div id="kpi-form" style="display:none;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:600;color:var(--gris-texto);margin-bottom:10px;">Horas hombre trabajadas este mes (estimadas)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <div><label style="font-size:11px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:4px;">Total HH</label><input type="number" id="hh-total" class="fi" placeholder="Ej: 15000" style="width:100%;padding:10px 12px;border:1.5px solid var(--gris-borde);border-radius:9px;font-size:14px;font-family:'Barlow',sans-serif;"></div>
+          <div><label style="font-size:11px;font-weight:700;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:4px;">N° trabajadores</label><input type="number" id="n-trabajadores" class="fi" placeholder="Ej: 85" style="width:100%;padding:10px 12px;border:1.5px solid var(--gris-borde);border-radius:9px;font-size:14px;font-family:'Barlow',sans-serif;"></div>
+        </div>
+        <button onclick="calcularKpis()" style="width:100%;padding:12px;border-radius:10px;border:none;background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;cursor:pointer;">Calcular KPIs</button>
+      </div>
+      <div id="kpi-resultados">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="kpi-grid-legal">
+          <div style="background:var(--gris-bg);border-radius:10px;padding:12px 14px;">
+            <div style="font-size:11px;font-weight:600;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Tasa de frecuencia</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--azul);" id="kpi-tf">—</div>
+            <div style="font-size:11px;color:var(--gris-texto);">N°acc × 1.000.000 ÷ HH</div>
+          </div>
+          <div style="background:var(--gris-bg);border-radius:10px;padding:12px 14px;">
+            <div style="font-size:11px;font-weight:600;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Tasa de gravedad</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--naranja);" id="kpi-tg">—</div>
+            <div style="font-size:11px;color:var(--gris-texto);">Días perdidos × 1.000.000 ÷ HH</div>
+          </div>
+          <div style="background:var(--gris-bg);border-radius:10px;padding:12px 14px;">
+            <div style="font-size:11px;font-weight:600;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Índice de incidencia</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--negro);" id="kpi-ii">—</div>
+            <div style="font-size:11px;color:var(--gris-texto);">N°acc × 100 ÷ trabajadores</div>
+          </div>
+          <div style="background:var(--gris-bg);border-radius:10px;padding:12px 14px;">
+            <div style="font-size:11px;font-weight:600;color:var(--gris-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Ratio acc/incidente</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;color:var(--negro);" id="kpi-ratio">—</div>
+            <div style="font-size:11px;color:var(--gris-texto);">Ideal: 1 accidente cada 20 incidentes</div>
+          </div>
+        </div>
+        <div id="kpi-sin-hh" style="text-align:center;padding:16px;color:var(--gris-muted);font-size:13px;">Ingresa las HH trabajadas del mes para calcular los índices legales.</div>
+      </div>
+    </div>
   </div>
 
   <div id="lista-usuarios"></div>
@@ -297,6 +343,64 @@ function toggleActivo(id){
 
 function cerrarModal(){document.getElementById('modal-usuario').classList.remove('open');}
 function cerrarOverlay(e){if(e.target.classList.contains('modal-overlay'))cerrarModal();}
+
+function confirmarLimpiar(){
+  if(confirm('¿Eliminar todos los eventos registrados? Los usuarios se conservan. Esta acción no se puede deshacer.')){
+    if(confirm('¿Estás seguro? Se borrarán TODOS los eventos del sistema.')){
+      localStorage.removeItem('mp_eventos');
+      localStorage.removeItem('mp_alertas_rafael');
+      mostrarToast('✓ Eventos eliminados. Sistema listo para usar.',true);
+      render();
+    }
+  }
+}
+
+function toggleKpis(){
+  const form=document.getElementById('kpi-form');
+  const btn=document.getElementById('btn-kpi-toggle');
+  const visible=form.style.display==='block';
+  form.style.display=visible?'none':'block';
+  btn.textContent=visible?'Ingresar HH':'Cerrar';
+}
+
+function calcularKpis(){
+  const hh=parseFloat(document.getElementById('hh-total').value)||0;
+  const nt=parseFloat(document.getElementById('n-trabajadores').value)||0;
+  if(!hh||!nt){mostrarToast('Ingresa HH y N° de trabajadores',false);return;}
+  const eventos=JSON.parse(localStorage.getItem('mp_eventos')||'[]');
+  const hoy=new Date();
+  const mes=hoy.getMonth(),anio=hoy.getFullYear();
+  const eventosMes=eventos.filter(e=>{const f=new Date(e.fecha);return f.getMonth()===mes&&f.getFullYear()===anio;});
+  const accidentes=eventosMes.filter(e=>e.tipo==='accidente');
+  const incidentes=eventosMes.filter(e=>e.tipo==='incidente');
+  const diasPerdidos=accidentes.reduce((sum,e)=>{
+    const dp=e.dias_perdidos||'0';
+    if(dp.includes('Más de 7'))return sum+10;
+    if(dp.includes('4'))return sum+5;
+    if(dp.includes('1'))return sum+2;
+    return sum;
+  },0);
+  const tf=hh>0?Math.round(accidentes.length*1000000/hh):0;
+  const tg=hh>0?Math.round(diasPerdidos*1000000/hh):0;
+  const ii=nt>0?Math.round(accidentes.length*100/nt*10)/10:0;
+  const ratio=incidentes.length>0?(accidentes.length/incidentes.length).toFixed(2):'Sin incidentes';
+  document.getElementById('kpi-tf').textContent=tf;
+  document.getElementById('kpi-tg').textContent=tg;
+  document.getElementById('kpi-ii').textContent=ii;
+  document.getElementById('kpi-ratio').textContent=ratio;
+  document.getElementById('kpi-sin-hh').style.display='none';
+  localStorage.setItem('mp_kpi_hh',JSON.stringify({hh,nt,mes,anio}));
+  toggleKpis();
+  mostrarToast('✓ KPIs calculados',true);
+}
+
+// Restaurar KPIs si ya se ingresaron
+const kkpi=JSON.parse(localStorage.getItem('mp_kpi_hh')||'null');
+if(kkpi){
+  document.getElementById('hh-total').value=kkpi.hh;
+  document.getElementById('n-trabajadores').value=kkpi.nt;
+  calcularKpis();
+}
 
 function mostrarToast(msg,ok){
   const t=document.getElementById('toast');
