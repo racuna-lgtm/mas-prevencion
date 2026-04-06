@@ -68,7 +68,7 @@ body{font-family:'Barlow',sans-serif;background:var(--gris-bg);color:var(--negro
 <div class="body">
   <div class="filtros">
     <div class="filtro activo" onclick="filtrar('todos',this)">Todos</div>
-    <div class="filtro" onclick="filtrar('registrado',this)">Sin asignar</div>
+    <div class="filtro" onclick="filtrar('registrado',this)">Esperando asignación</div>
     <div class="filtro" onclick="filtrar('investigando',this)">Investigando</div>
     <div class="filtro" onclick="filtrar('correctivas',this)">Con correctivas</div>
     <div class="filtro" onclick="filtrar('cerrado',this)">Cerrados</div>
@@ -99,7 +99,7 @@ if(!usuario||usuario.rol!=='prevencionista') window.location.href='index.html';
 let filtroActual='todos';
 
 function getEventos(){return JSON.parse(localStorage.getItem('mp_eventos')||'[]');}
-function estadoLabel(e){return{registrado:'Sin asignar',investigando:'Investigando',correctivas:'Con correctivas',cerrado:'Cerrado'}[e]||e;}
+function estadoLabel(e){return{registrado:'Pendiente jefatura',investigando:'Investigando',correctivas:'Con correctivas',revision_rafael:'Listo para cierre',cerrado:'Cerrado'}[e]||e;}
 
 function filtrar(f,el){
   filtroActual=f;
