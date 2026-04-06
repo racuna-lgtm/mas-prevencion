@@ -197,6 +197,12 @@ function render(){
           </div>
           <div>
             <label class="fl">Evidencia fotográfica (opcional)</label>
+            <div style="display:flex;gap:7px;margin-bottom:8px;">
+              <button onclick="abrirCamaraCorr(${i})" style="flex:1;padding:9px;border-radius:9px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:12px;font-weight:600;color:var(--azul);font-family:'Barlow',sans-serif;">📷 Tomar foto</button>
+              <button onclick="abrirGaleriaCorr(${i})" style="flex:1;padding:9px;border-radius:9px;border:1.5px solid var(--gris-borde);background:var(--blanco);cursor:pointer;font-size:12px;font-weight:600;color:var(--gris-texto);font-family:'Barlow',sans-serif;">🖼 Galería</button>
+            </div>
+            <input type="file" id="file-corr-cam-${i}" accept="image/*" onchange="procesarFotoCorr(${i},this)" style="display:none;">
+            <input type="file" id="file-corr-gal-${i}" accept="image/*" onchange="procesarFotoCorr(${i},this)" style="display:none;">
             <div class="fotos-wrap" id="fotos-wrap-${i}">
               ${renderSlotsFotos(i)}
             </div>
@@ -220,7 +226,7 @@ function renderSlotsFotos(idx){
       <div class="foto-icon">📷</div>
       <div class="foto-txt">Agregar foto</div>
     </div>`;
-    html+=`<input type="file" id="file-${idx}" accept="image/*" capture="environment" onchange="procesarFoto(${idx},this)">`;
+    html+=`<input type="file" id="file-${idx}" accept="image/*" capture="environment" onchange="procesarFotoCorr(${idx},this)">`;
   }
   return html;
 }
@@ -232,9 +238,10 @@ function toggleCard(i){
 
 function syncNota(i,v){correctivasEstado[i].nota=v;}
 
-function abrirCamara(i){document.getElementById('file-'+i)?.click();}
+function abrirCamaraCorr(i){document.getElementById('file-corr-cam-'+i)?.click();}
+function abrirGaleriaCorr(i){document.getElementById('file-corr-gal-'+i)?.click();}
 
-function procesarFoto(idx,input){
+function procesarFotoCorr(idx,input){
   const file=input.files[0];
   if(!file)return;
   const reader=new FileReader();
